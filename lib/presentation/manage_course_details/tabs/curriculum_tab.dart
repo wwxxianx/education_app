@@ -3,6 +3,7 @@ import 'package:education_app/common/theme/typography.dart';
 import 'package:education_app/common/utils/extensions/sized_box_extension.dart';
 import 'package:education_app/data/network/api_result.dart';
 import 'package:education_app/domain/model/course/course.dart';
+import 'package:education_app/domain/model/course/enum/course_enum.dart';
 import 'package:education_app/presentation/video_player/video_player_wrapper_screen.dart';
 import 'package:education_app/state_management/manage_course_details/manage_course_details_bloc.dart';
 import 'package:education_app/state_management/manage_course_details/manage_course_details_state.dart';
@@ -90,10 +91,10 @@ class _CurriculumExpansionPanelState extends State<CurriculumExpansionPanel> {
   }
 
   void _handlePartContentPressed(CoursePart partContent) {
-    if (partContent.isVideoIncluded) {
+    if (partContent.resource.mimeTypeEnum == CourseResourceMimeType.VIDEO) {
       context.push(
         VideoPlayerWrapperScreen.route,
-        extra: partContent.resourceUrl,
+        extra: partContent.resource.url,
       );
     }
   }
@@ -131,7 +132,7 @@ class _CurriculumExpansionPanelState extends State<CurriculumExpansionPanel> {
                       style: CustomFonts.bodyMedium,
                     ),
                     Text(
-                      partContent.isVideoIncluded ? "Video" : "Article",
+                      partContent.resource.mimeTypeEnum.displayLabel,
                       style: CustomFonts.labelExtraSmall
                           .copyWith(color: CustomColors.textGrey),
                     ),
@@ -140,11 +141,7 @@ class _CurriculumExpansionPanelState extends State<CurriculumExpansionPanel> {
               ),
               IconButton(
                 onPressed: () {},
-                icon: HeroIcon(
-                  partContent.isVideoIncluded
-                      ? HeroIcons.playCircle
-                      : HeroIcons.chevronRight,
-                ),
+                icon: partContent.resource.mimeTypeEnum.buildIcon(),
               ),
               6.kW,
             ],

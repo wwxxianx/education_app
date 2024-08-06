@@ -1,8 +1,14 @@
 import 'package:education_app/app_router.dart';
 import 'package:education_app/common/constants/constants.dart';
 import 'package:education_app/common/theme/app_theme.dart';
+import 'package:education_app/common/widgets/course/course_category_toggle_list.dart';
+import 'package:education_app/common/widgets/dropdown_menu/language_dropdown_menu.dart';
+import 'package:education_app/common/widgets/dropdown_menu/level_dropdown_menu.dart';
 import 'package:education_app/di/init_dependencies.dart';
 import 'package:education_app/state_management/app_user_cubit.dart';
+import 'package:education_app/state_management/explore/explore_bloc.dart';
+import 'package:education_app/state_management/user_favourite_course/user_favourite_course_bloc.dart';
+import 'package:education_app/state_management/user_favourite_course/user_favourite_course_event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
@@ -11,12 +17,17 @@ import 'package:toastification/toastification.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initDependencies();
-  // Stripe.publishableKey = Constants.stripePublishableKey;
+  Stripe.publishableKey = Constants.stripePublishableKey;
 
   runApp(
     MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => serviceLocator<AppUserCubit>()),
+        BlocProvider(create: (_) => serviceLocator<ExploreBloc>()),
+        BlocProvider(create: (_) => serviceLocator<LanguageCubit>()..fetchLanguages()),
+        BlocProvider(create: (_) => serviceLocator<CourseCategoriesCubit>()..fetchCourseCategories()),
+        BlocProvider(create: (_) => serviceLocator<CourseLevelCubit>()..fetchCourseLevels()),
+        BlocProvider(create: (_) => serviceLocator<UserFavouriteCourseBloc>()..add(OnFetchUserFavouriteCourses())),
         // BlocProvider(create: (_) => serviceLocator<SignUpBloc>()),
         // BlocProvider(
         //     create: (_) =>

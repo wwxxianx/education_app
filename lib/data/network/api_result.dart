@@ -1,5 +1,6 @@
 import 'package:dio/src/dio_exception.dart';
 import 'package:flutter/foundation.dart';
+import 'package:logger/logger.dart';
 
 sealed class ApiResult<T> {
   const ApiResult();
@@ -36,7 +37,7 @@ class ErrorHandler implements Exception {
     _handleOtherException(error);
   }
 
-  get errorMessage {
+  String get errorMessage {
     return _errorMessage;
   }
 
@@ -49,7 +50,19 @@ class ErrorHandler implements Exception {
 
   // Dio Exception - tracked error
   _handleDioException(DioException error) {
+    var logger = Logger();
     ErrorHandler serverError;
+
+    // Error response from BE
+    var response = error.response;
+    var data = response?.data;
+    if (data is Map && data['message'] != null) {
+      _errorMessage = data['message'];
+      serverError = ErrorHandler(data['message']);
+      return serverError;
+    }
+
+    // General error
     switch (error.type) {
       case DioExceptionType.cancel:
         _errorMessage = "Request Canceled";

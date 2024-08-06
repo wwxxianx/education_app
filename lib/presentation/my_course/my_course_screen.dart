@@ -2,8 +2,10 @@ import 'package:education_app/common/theme/color.dart';
 import 'package:education_app/common/theme/typography.dart';
 import 'package:education_app/common/widgets/course/course_list_tile.dart';
 import 'package:education_app/data/network/api_result.dart';
+import 'package:education_app/di/init_dependencies.dart';
 import 'package:education_app/domain/model/course/course.dart';
 import 'package:education_app/presentation/create_course/create_course_screen.dart';
+import 'package:education_app/state_management/app_user_cubit.dart';
 import 'package:education_app/state_management/my_course/my_course_bloc.dart';
 import 'package:education_app/state_management/my_course/my_course_event.dart';
 import 'package:education_app/state_management/my_course/my_course_state.dart';
@@ -11,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:heroicons/heroicons.dart';
+import 'package:logger/logger.dart';
 
 class MyCourseScreen extends StatelessWidget {
   static const route = '/my-course';
@@ -19,13 +22,23 @@ class MyCourseScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => MyCourseBloc()..add(OnFetchMyCourses()),
+      create: (context) {
+        final appUserState = context.read<AppUserCubit>().state;
+        if (appUserState.currentUser != null) {
+          return MyCourseBloc(fetchCourses: serviceLocator())
+            ..add(
+                OnFetchMyCourses(currentUserId: appUserState.currentUser!.id));
+        }
+        return MyCourseBloc(fetchCourses: serviceLocator())
+          ..add(OnFetchMyCourses(currentUserId: ''));
+      },
       child: Scaffold(
         appBar: AppBar(
           title: const Text(
             "My Courses",
             style: CustomFonts.titleMedium,
           ),
+          centerTitle: true,
         ),
         floatingActionButton: FloatingActionButton(
           backgroundColor: Colors.black,
@@ -48,6 +61,9 @@ class MyCoursesList extends StatelessWidget {
   const MyCoursesList({super.key});
 
   void _navigateToCourseDetails(BuildContext context, Course course) {
+    var logger = Logger();
+    logger.d('course id ${course.id}');
+
     context.push('/my-course/${course.id}');
   }
 

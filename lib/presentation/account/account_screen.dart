@@ -1,18 +1,20 @@
 import 'package:education_app/common/theme/color.dart';
+import 'package:education_app/common/theme/dimension.dart';
 import 'package:education_app/common/theme/typography.dart';
 import 'package:education_app/common/utils/extensions/sized_box_extension.dart';
+import 'package:education_app/common/widgets/avatar/avatar.dart';
+import 'package:education_app/common/widgets/button/custom_button.dart';
 import 'package:education_app/common/widgets/button/custom_list_tile.dart';
 import 'package:education_app/common/widgets/text/text_bg_gradient_shape.dart';
 import 'package:education_app/presentation/account/widgets/account_section_card.dart';
-import 'package:education_app/presentation/my_course/my_course_screen.dart';
+import 'package:education_app/presentation/account/widgets/edit_account_bottom_sheet.dart';
+import 'package:education_app/presentation/redirects/instructor_account_redirect_screen.dart';
 import 'package:education_app/state_management/app_user_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:heroicons/heroicons.dart';
-import 'package:education_app/common/widgets/avatar/avatar.dart';
-import 'package:education_app/common/theme/dimension.dart';
 
 class AccountScreen extends StatelessWidget {
   static const route = '/account';
@@ -24,14 +26,27 @@ class AccountScreen extends StatelessWidget {
     });
   }
 
+  void _showEditAccountBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      isDismissible: true,
+      isScrollControlled: true,
+      elevation: 0,
+      context: context,
+      builder: (context) {
+        return const EditAccountBottomSheet();
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final currentUser = context.watch<AppUserCubit>().state.currentUser;
-    // if (currentUser == null) {
-    //   return Scaffold(
-    //     body: Center(child: Column()),
-    //   );
-    // }
+    if (currentUser == null) {
+      return Scaffold(
+        body: Center(child: Column()),
+      );
+    }
+    
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
@@ -46,8 +61,8 @@ class AccountScreen extends StatelessWidget {
               Row(
                 children: [
                   Avatar(
-                    imageUrl: currentUser?.profileImageUrl,
-                    placeholder: currentUser?.fullName[0] ?? "",
+                    imageUrl: currentUser.profileImageUrl,
+                    placeholder: currentUser.fullName[0],
                     size: 64,
                   ),
                   8.kW,
@@ -57,7 +72,7 @@ class AccountScreen extends StatelessWidget {
                       Row(
                         children: [
                           Text(
-                            '',
+                            currentUser.fullName,
                             style: CustomFonts.labelLarge,
                           ),
                           4.kW,
@@ -70,7 +85,9 @@ class AccountScreen extends StatelessWidget {
                         ],
                       ),
                       InkWell(
-                        onTap: () {},
+                        onTap: () {
+                          _showEditAccountBottomSheet(context);
+                        },
                         child: const Text(
                           "Edit my account",
                           style: TextStyle(
@@ -125,7 +142,7 @@ class AccountScreen extends StatelessWidget {
                     4.kH,
                     CustomListTile(
                       onTap: () {
-                        context.push(MyCourseScreen.route);
+                        context.push(InstructorRedirectScreen.route);
                       },
                       leading: SvgPicture.asset(
                           "assets/icons/blackboard-filled.svg"),
@@ -137,6 +154,28 @@ class AccountScreen extends StatelessWidget {
                         HeroIcons.chevronRight,
                         size: 16.0,
                       ),
+                    ),
+                  ],
+                ),
+              ),
+              24.kH,
+              CustomButton(
+                style: CustomButtonStyle.white,
+                onPressed: () {
+                  _handleSignOut(context);
+                },
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const HeroIcon(
+                      HeroIcons.arrowLeftOnRectangle,
+                      size: 16,
+                      style: HeroIconStyle.mini,
+                    ),
+                    4.kW,
+                    const Text(
+                      "Sign out",
+                      style: CustomFonts.labelSmall,
                     ),
                   ],
                 ),

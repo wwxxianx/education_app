@@ -7,6 +7,7 @@ class CustomColors {
     Color(0xFF9DFF9D),
     Color(0xFFE6FF82),
   ]);
+  static const containerLightGreen = Color(0xFFF5FFF4);
   static const containerLightBlue = Color(0xFFF4F7FE);
   static const informationContainerGreen = Color(0xFFECFFEA);
 
@@ -56,6 +57,13 @@ class CustomColors {
       blurRadius: 7.5,
       offset: Offset(0, 2),
       color: CustomColors.primaryBlue,
+    )
+  ];
+  static final lightBlueShadow = [
+    BoxShadow(
+      blurRadius: 7.5,
+      offset: Offset(0, 2),
+      color: Color(0xFFADC3FF),
     )
   ];
   static final containerSlateShadow = [

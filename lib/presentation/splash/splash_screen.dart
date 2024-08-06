@@ -3,10 +3,11 @@ import 'package:education_app/presentation/explore/explore_screen.dart';
 import 'package:education_app/presentation/onboarding/onboarding_screen.dart';
 import 'package:education_app/presentation/splash/splash_bg_shape.dart';
 import 'package:education_app/state_management/app_user_cubit.dart';
+import 'package:education_app/state_management/explore/explore_bloc.dart';
+import 'package:education_app/state_management/explore/explore_event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lottie/lottie.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -72,12 +73,14 @@ class _SplashScreenState extends State<SplashScreen>
     });
 
     if (!mounted) return;
-    // if (state.currentUser != null) {
-    //   // Init app state
-    //   context.read<GiftCardBloc>().add(OnFetchAllGiftCards());
-    //   context.read<AppUserCubit>().fetchNotifications();
-    //   context.read<HomeBloc>().add(OnFetchRecommendedCampaigns());
-    // }
+    if (state.currentUser != null) {
+      // Init app state
+      // context.read<GiftCardBloc>().add(OnFetchAllGiftCards());
+      context.read<AppUserCubit>()
+        ..fetchUserVouchers()
+        ..fetchNotifications();
+      context.read<ExploreBloc>().add(OnFetchPopularCourses());
+    }
   }
 
   @override

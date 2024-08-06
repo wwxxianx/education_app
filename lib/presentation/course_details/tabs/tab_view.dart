@@ -1,7 +1,7 @@
 import 'package:education_app/presentation/course_details/tabs/about_tab.dart';
 import 'package:education_app/presentation/course_details/tabs/curriculum_tab.dart';
+import 'package:education_app/presentation/course_details/tabs/more_tab.dart';
 import 'package:education_app/presentation/course_details/tabs/reviews_tab.dart';
-import 'package:education_app/presentation/course_details/tabs/updates_tab.dart';
 import 'package:education_app/state_management/course_details/course_details_bloc.dart';
 import 'package:education_app/state_management/course_details/course_details_event.dart';
 import 'package:education_app/state_management/course_details/course_details_state.dart';
@@ -9,8 +9,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CourseDetailsTabView extends StatefulWidget {
+  final String courseId;
   const CourseDetailsTabView({
     super.key,
+    required this.courseId,
   });
 
   @override
@@ -24,7 +26,7 @@ class _CourseDetailsTabViewState extends State<CourseDetailsTabView>
     "About",
     "Curriculum",
     "Reviews",
-    "Updates",
+    "More",
   ];
 
   @override
@@ -69,13 +71,17 @@ class _CourseDetailsTabViewState extends State<CourseDetailsTabView>
       case 0:
         return CourseAboutTabContent();
       case 1:
-        return const CurriculumTabContent();
+        return CurriculumTabContent(
+          courseId: widget.courseId,
+        );
       case 2:
         return CourseReviewsTabContent();
       case 3:
-        return CourseUpdatesTabContent();
+        return CourseMoreTabContent(
+          courseId: widget.courseId,
+        );
       default:
-        return Container();
+        return CourseAboutTabContent();
     }
   }
 

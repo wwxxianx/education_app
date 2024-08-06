@@ -5,20 +5,47 @@ import 'package:education_app/data/network/api_result.dart';
 import 'package:education_app/di/init_dependencies.dart';
 import 'package:education_app/domain/model/course/course.dart';
 import 'package:education_app/domain/usecases/course/fetch_course_levels.dart';
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class CourseLevelCubit extends Cubit<ApiResult<List<CourseLevel>>> {
+final class CourseLevelsState extends Equatable {
+  final ApiResult<List<CourseLevel>> levelsResult;
+
+  const CourseLevelsState({
+    required this.levelsResult,
+  });
+
+  factory CourseLevelsState.initial() {
+    return const CourseLevelsState(
+      levelsResult: ApiResultInitial(),
+    );
+  }
+
+  CourseLevelsState copyWith({
+    ApiResult<List<CourseLevel>>? levelsResult,
+  }) {
+    return CourseLevelsState(
+      levelsResult: levelsResult ?? this.levelsResult,
+    );
+  }
+
+  @override
+  List<Object> get props => [levelsResult];
+}
+
+class CourseLevelCubit extends Cubit<CourseLevelsState> {
   final FetchCourseLevels _fetchCourseLevels;
   CourseLevelCubit({required FetchCourseLevels fetchCourseLevels})
       : _fetchCourseLevels = fetchCourseLevels,
-        super(const ApiResultLoading());
+        super(CourseLevelsState.initial());
 
   Future<void> fetchCourseLevels() async {
     final res = await _fetchCourseLevels.call(NoPayload());
     res.fold(
-      (l) => emit(ApiResultFailure(l.errorMessage)),
-      (r) => emit(ApiResultSuccess(r)),
+      (failure) => emit(
+          state.copyWith(levelsResult: ApiResultFailure(failure.errorMessage))),
+      (data) => emit(state.copyWith(levelsResult: ApiResultSuccess(data))),
     );
   }
 }
@@ -52,20 +79,21 @@ class CourseLevelDropdownMenu extends StatelessWidget {
       create: (context) => CourseLevelCubit(
         fetchCourseLevels: serviceLocator(),
       )..fetchCourseLevels(),
-      child: BlocBuilder<CourseLevelCubit, ApiResult<List<CourseLevel>>>(
+      child: BlocBuilder<CourseLevelCubit, CourseLevelsState>(
         builder: (context, state) {
-          if (state is ApiResultLoading) {
+          final levelsResult = state.levelsResult;
+          if (levelsResult is ApiResultLoading) {
             return Text("loading...");
           }
-          if (state is ApiResultFailure) {
+          if (levelsResult is ApiResultFailure) {
             return Text("error...");
           }
-          if (state is ApiResultSuccess<List<CourseLevel>>) {
+          if (levelsResult is ApiResultSuccess<List<CourseLevel>>) {
             return CustomDropdownMenu(
               label: 'Course level',
               errorText: errorText,
               initialSelection: initialSelection,
-              dropdownMenuEntries: _buildDropdownMenuItems(state),
+              dropdownMenuEntries: _buildDropdownMenuItems(levelsResult),
               onSelected: (languageId) {
                 if (onSelected != null && languageId != null) {
                   onSelected!(languageId);

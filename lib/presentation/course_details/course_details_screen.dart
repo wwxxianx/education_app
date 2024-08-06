@@ -10,13 +10,18 @@ import 'package:education_app/common/widgets/media/media_carousel.dart';
 import 'package:education_app/data/network/api_result.dart';
 import 'package:education_app/di/init_dependencies.dart';
 import 'package:education_app/domain/model/course/course.dart';
+import 'package:education_app/domain/model/user/user_course.dart';
+import 'package:education_app/domain/model/voucher/user_voucher.dart';
 import 'package:education_app/presentation/course_details/tabs/tab_view.dart';
+import 'package:education_app/presentation/course_details/widgets/voucher_section.dart';
 import 'package:education_app/state_management/course_details/course_details_bloc.dart';
 import 'package:education_app/state_management/course_details/course_details_event.dart';
 import 'package:education_app/state_management/course_details/course_details_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:heroicons/heroicons.dart';
+import 'package:toastification/toastification.dart';
 
 class CourseDetailsScreen extends StatelessWidget {
   final String courseId;
@@ -28,12 +33,98 @@ class CourseDetailsScreen extends StatelessWidget {
     required this.courseId,
   });
 
+  void _navigateToPurchaseScreen(BuildContext context) {
+    context.push("/course-details/$courseId/purchase");
+  }
+
+  void _navigateToLearningDetailsScreen(BuildContext context) {
+    context.push("/my-learning/$courseId");
+  }
+
+  Widget _buildBottomAction(BuildContext context) {
+    final bloc = context.read<CourseDetailsBloc>();
+    final userCourseResult = bloc.state.userCourseResult;
+    final courseResult = bloc.state.courseResult;
+    if (courseResult is ApiResultSuccess<Course> &&
+        userCourseResult is ApiResultSuccess<UserCourse?>) {
+      if (userCourseResult.data == null) {
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              courseResult.data.displayPrice,
+              style: CustomFonts.titleMedium,
+            ),
+            20.kW,
+            Expanded(
+              child: CustomButton(
+                onPressed: () {
+                  _navigateToPurchaseScreen(context);
+                },
+                child: const Text("Buy Now"),
+              ),
+            ),
+          ],
+        );
+      }
+      // Course purchased
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Expanded(
+            child: CustomButton(
+              onPressed: () {
+                _navigateToLearningDetailsScreen(context);
+              },
+              child: const Text("Continue my learning"),
+            ),
+          ),
+        ],
+      );
+    }
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        20.kW,
+        Expanded(
+          child: CustomButton(
+            onPressed: () {
+              _navigateToLearningDetailsScreen(context);
+            },
+            child: const Skeleton(),
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => CourseDetailsBloc(fetchCourse: serviceLocator())
-        ..add(OnFetchCourse(courseId)),
-      child: BlocBuilder<CourseDetailsBloc, CourseDetailsState>(
+      create: (context) => CourseDetailsBloc(
+        fetchCourse: serviceLocator(),
+        fetchLearningCourse: serviceLocator(),
+        fetchCourseFAQ: serviceLocator(),
+        fetchCourseVouchers: serviceLocator(),
+        claimVoucher: serviceLocator(),
+      )
+        ..add(OnFetchCourse(courseId))
+        ..add(OnFetchUserCourse(courseId))
+        ..add(OnFetchCourseVoucher(courseId))
+        ,
+      child: BlocConsumer<CourseDetailsBloc, CourseDetailsState>(
+        listener: (context, state) {
+        final claimVoucherResult = state.claimVoucherResult;
+        if (claimVoucherResult is ApiResultFailure<UserVoucher>) {
+          toastification.show(
+            type: ToastificationType.error,
+            autoCloseDuration: const Duration(seconds: 5),
+            showProgressBar: true,
+            title:
+                Text(claimVoucherResult.errorMessage ?? "Something went wrong"),
+          );
+        }
+      },
         builder: (context, state) {
           final courseResult = state.courseResult;
           return Scaffold(
@@ -50,25 +141,7 @@ class CourseDetailsScreen extends StatelessWidget {
                   horizontal: BorderSide(color: Colors.black),
                 ),
               ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (courseResult is ApiResultSuccess<Course>)
-                    Text(
-                      "RM ${courseResult.data.price}",
-                      style: CustomFonts.titleMedium,
-                    ),
-                  20.kW,
-                  Expanded(
-                    child: CustomButton(
-                      onPressed: () {},
-                      child: Text(
-                        "Buy Now",
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+              child: _buildBottomAction(context),
             ),
             appBar: AppBar(
               backgroundColor: Colors.transparent,
@@ -138,10 +211,14 @@ class CourseDetailsScreen extends StatelessWidget {
                           ),
                         6.kH,
                         if (courseResult is ApiResultLoading)
-                          Skeleton(width: 60, height: 30,),
+                          Skeleton(
+                            width: 60,
+                            height: 30,
+                          ),
                         if (courseResult is ApiResultSuccess<Course>)
                           CustomTag.grey(
-                            child: Text(courseResult.data.category.title.capitalize()),
+                            child: Text(
+                                courseResult.data.category.title.capitalize()),
                           ),
                         12.kH,
                         if (courseResult is ApiResultSuccess<Course>)
@@ -152,8 +229,11 @@ class CourseDetailsScreen extends StatelessWidget {
                       ],
                     ),
                   ),
+                  VoucherSection(courseId: courseId,),
                   8.kH,
-                  CourseDetailsTabView(),
+                  CourseDetailsTabView(
+                    courseId: courseId,
+                  ),
                 ],
               ),
             ),

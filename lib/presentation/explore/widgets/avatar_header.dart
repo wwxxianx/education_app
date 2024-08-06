@@ -3,10 +3,15 @@ import 'package:education_app/common/theme/dimension.dart';
 import 'package:education_app/common/theme/typography.dart';
 import 'package:education_app/common/utils/extensions/sized_box_extension.dart';
 import 'package:education_app/common/widgets/avatar/avatar.dart';
+import 'package:education_app/common/widgets/badge/custom_badge.dart';
+import 'package:education_app/common/widgets/icon_with_badge.dart';
+import 'package:education_app/presentation/notification/notification_screen.dart';
 import 'package:education_app/state_management/app_user_cubit.dart';
 import 'package:education_app/state_management/app_user_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:heroicons/heroicons.dart';
 
 class AvatarHeader extends StatelessWidget {
   final String title;
@@ -26,7 +31,6 @@ class AvatarHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AppUserCubit, AppUserState>(
-      
       builder: (context, state) {
         return Padding(
           padding: padding,
@@ -54,7 +58,24 @@ class AvatarHeader extends StatelessWidget {
                 ],
               ),
               const Spacer(),
-              action ?? SizedBox(),
+              IconButton(
+                onPressed: () {
+                  context.push(NotificationScreen.route);
+                },
+                icon: BlocBuilder<AppUserCubit, AppUserState>(
+                  builder: (context, state) {
+                    final notifications = state.notifications;
+                    final hasUnreadNotification = notifications
+                        .any((notification) => !notification.isRead);
+                    return IconWithBadge(
+                      showBadge: hasUnreadNotification,
+                      icon: const HeroIcon(
+                        HeroIcons.bell,
+                      ),
+                    );
+                  },
+                ),
+              ),
             ],
           ),
         );

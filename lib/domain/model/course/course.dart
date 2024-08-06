@@ -1,8 +1,10 @@
 import 'package:education_app/domain/model/constant/language.dart';
-import 'package:education_app/domain/model/course/course_instructor.dart';
+import 'package:education_app/domain/model/course/enum/course_enum.dart';
 import 'package:education_app/domain/model/course/user_review.dart';
 import 'package:education_app/domain/model/course_category/course_category.dart';
 import 'package:education_app/domain/model/image/image_model.dart';
+import 'package:education_app/domain/model/user/user.dart';
+import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'course.g.dart';
@@ -30,19 +32,61 @@ class CourseLevel {
 }
 
 @JsonSerializable()
-class CoursePart {
+class CourseResource {
+  final String id;
+  final String url;
+  final String mimeType;
+
+  const CourseResource({
+    required this.id,
+    required this.url,
+    required this.mimeType,
+  });
+
+  CourseResourceMimeType get mimeTypeEnum {
+    if (mimeType == "DOCUMENT") {
+      return CourseResourceMimeType.DOCUMENT;
+    }
+    if (mimeType == "TEXT") {
+      return CourseResourceMimeType.TEXT;
+    }
+    if (mimeType == "VIDEO") {
+      return CourseResourceMimeType.VIDEO;
+    }
+    return CourseResourceMimeType.DOCUMENT;
+  }
+
+  factory CourseResource.fromJson(Map<String, dynamic> json) =>
+      _$CourseResourceFromJson(json);
+
+  Map<String, dynamic> toJson() => _$CourseResourceToJson(this);
+
+  static final samples = [
+    CourseResource(
+        id: '1',
+        url:
+            'https://vooexvblyikqqqacbwnx.supabase.co/storage/v1/object/public/course/resource/testing/5505-Article%20Text-10230-1-10-20210507.pdf',
+        mimeType: 'DOCUMENT'),
+    CourseResource(
+        id: '1',
+        url:
+            'https://vooexvblyikqqqacbwnx.supabase.co/storage/v1/object/public/course/resource/testing/5505-Article%20Text-10230-1-10-20210507.pdf',
+        mimeType: 'DOCUMENT'),
+  ];
+}
+
+@JsonSerializable()
+class CoursePart extends Equatable {
   final String id;
   final int order;
   final String title;
-  final bool isVideoIncluded;
-  final String resourceUrl;
+  final CourseResource resource;
 
   const CoursePart({
     required this.id,
     required this.order,
     required this.title,
-    required this.isVideoIncluded,
-    required this.resourceUrl,
+    required this.resource,
   });
 
   factory CoursePart.fromJson(Map<String, dynamic> json) =>
@@ -50,21 +94,27 @@ class CoursePart {
 
   Map<String, dynamic> toJson() => _$CoursePartToJson(this);
 
-  static const samples = [
+  static final samples = [
     CoursePart(
       id: '1',
       order: 1,
       title: 'What is this course for?',
-      isVideoIncluded: false,
-      resourceUrl: "resourceUrl",
+      resource: CourseResource.samples.first,
     ),
     CoursePart(
       id: '2',
       order: 2,
       title: 'Introduction to Python',
-      isVideoIncluded: false,
-      resourceUrl: "resourceUrl",
+      resource: CourseResource.samples.first,
     ),
+  ];
+  
+  @override
+  List<Object?> get props => [
+    id,
+    order,
+    title,
+    resource,
   ];
 }
 
@@ -73,7 +123,6 @@ class CourseSection {
   final String id;
   final int order;
   final String title;
-  @JsonKey(name: 'course_parts')
   final List<CoursePart> parts;
 
   const CourseSection({
@@ -88,7 +137,7 @@ class CourseSection {
 
   Map<String, dynamic> toJson() => _$CourseSectionToJson(this);
 
-  static const samples = [
+  static final samples = [
     CourseSection(
       id: '1',
       order: 1,
@@ -121,39 +170,54 @@ class Course {
   final String id;
   final String title;
   final String description;
-  @JsonKey(name: 'levels')
   final CourseLevel level;
-  final String? status;
+  final String status;
   final String? thumbnailUrl;
-  @JsonKey(name: 'course_instructors')
-  final CourseInstructor instructor;
-  @JsonKey(name: 'categories')
   final CourseCategory category;
-  final double price;
+  final List<CourseCategory> subcategories;
+  final UserModel instructor;
+  final int price;
   final double? reviewRating;
   final String createdAt;
   final String updatedAt;
   final Language language;
   final List<String> topics;
   final List<String> requirements;
-  @JsonKey(name: 'course_images')
   final List<ImageModel> images;
   final String? videoUrl;
   final List<CourseUpdate> updates;
-  @JsonKey(name: 'course_sections')
   final List<CourseSection> sections;
   final List<UserReview> reviews;
+
+  String get instructorDisplayName {
+    return instructor.instructorProfile?.fullName ?? instructor.fullName;
+  }
+
+  CoursePublishStatus get statusEnum {
+    try {
+      final statusEnum = CoursePublishStatus.values.byName(status);
+      return statusEnum;
+    } catch (e) {
+      return CoursePublishStatus.DRAFT;
+    }
+  }
+
+  String get displayPrice {
+    // Convert smallest unit to normal format
+    return "RM ${price / 100}";
+  }
 
   const Course({
     required this.id,
     required this.title,
     required this.description,
     required this.level,
-    this.status,
+    required this.instructor,
+    required this.status,
     this.thumbnailUrl,
     this.reviewRating,
-    required this.instructor,
     required this.category,
+    this.subcategories = const [],
     required this.price,
     required this.createdAt,
     required this.updatedAt,
@@ -179,9 +243,8 @@ class Course {
           'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod.',
       level: CourseLevel.samples.first,
       thumbnailUrl: '',
-      instructor: CourseInstructor.samples.first,
       category: CourseCategory.samples.first,
-      price: 29.90,
+      price: 29900,
       createdAt: '2024-05-16T08:21:57.324Z',
       updatedAt: '2024-05-16T08:21:57.324Z',
       language: Language.samples.first,
@@ -197,6 +260,7 @@ class Course {
       sections: CourseSection.samples,
       reviews: UserReview.samples,
       status: "DRAFT",
+      instructor: UserModel.sample,
     ),
     Course(
       id: '2',
@@ -205,9 +269,8 @@ class Course {
           'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod.',
       level: CourseLevel.samples.first,
       thumbnailUrl: '',
-      instructor: CourseInstructor.samples.first,
       category: CourseCategory.samples.first,
-      price: 29.90,
+      price: 29900,
       createdAt: '2024-05-16T08:21:57.324Z',
       updatedAt: '2024-05-16T08:21:57.324Z',
       language: Language.samples.first,
@@ -223,6 +286,7 @@ class Course {
       sections: CourseSection.samples,
       reviews: UserReview.samples,
       status: "PUBLISHED",
+      instructor: UserModel.sample,
     ),
     Course(
       id: '3',
@@ -231,9 +295,9 @@ class Course {
           'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod.',
       level: CourseLevel.samples.first,
       thumbnailUrl: '',
-      instructor: CourseInstructor.samples.first,
+      instructor: UserModel.sample,
       category: CourseCategory.samples.first,
-      price: 29.90,
+      price: 29900,
       createdAt: '2024-05-16T08:21:57.324Z',
       updatedAt: '2024-05-16T08:21:57.324Z',
       language: Language.samples.first,
@@ -260,7 +324,6 @@ class Course {
     description: $description,
     level: $level,
     thumbnailUrl: $thumbnailUrl,
-    instructor: $instructor,
     category: $category,
     price: $price,
     reviewRating: $reviewRating,

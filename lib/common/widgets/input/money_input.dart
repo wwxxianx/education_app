@@ -9,7 +9,7 @@ class MoneyTextField extends StatelessWidget {
   final String? errorText;
   final String? initialValue;
   final TextEditingController? controller;
-  final void Function(String)? onChanged;
+  final void Function(String value)? onChanged;
   final TextInputAction? textInputAction;
   final bool readOnly;
   const MoneyTextField({

@@ -29,15 +29,7 @@ class CustomToggleButton extends StatelessWidget {
             width: 1,
           ),
           borderRadius: BorderRadius.circular(6),
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    blurRadius: 7.5,
-                    offset: const Offset(0, 2),
-                    color: CustomColors.primaryBlue.withOpacity(0.6),
-                  )
-                ]
-              : null,
+          boxShadow: isSelected ? CustomColors.lightBlueShadow : null,
         ),
         child: Opacity(
           opacity: isSelected ? 1 : 0.6,
@@ -47,3 +39,4 @@ class CustomToggleButton extends StatelessWidget {
     );
   }
 }
+

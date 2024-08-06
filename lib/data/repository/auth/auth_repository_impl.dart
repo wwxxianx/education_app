@@ -7,7 +7,7 @@ import 'package:education_app/data/network/payload/auth/login_be_payload.dart';
 import 'package:education_app/data/network/payload/auth/sign_up_payload.dart';
 import 'package:education_app/data/network/response/auth/tokens_response.dart';
 import 'package:education_app/data/network/retrofit_api.dart';
-import 'package:education_app/domain/model/user.dart';
+import 'package:education_app/domain/model/user/user.dart';
 import 'package:education_app/domain/repository/auth/auth_repository.dart';
 import 'package:fpdart/src/either.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -21,6 +21,14 @@ class AuthRepositoryImpl implements AuthRepository {
     required this.api,
     required this.sp,
   });
+
+  @override
+  Future<void> signOut() async {
+    await supabase.auth.signOut();
+    sp.clearData(Constants.sharedPreferencesKey.user);
+    sp.clearData(Constants.sharedPreferencesKey.accessToken);
+    sp.clearData(Constants.sharedPreferencesKey.refreshToken);
+  }
 
   @override
   Future<Either<Failure, UserModel>> createUserWithEmailPassword(
@@ -76,11 +84,6 @@ class AuthRepositoryImpl implements AuthRepository {
     } catch (e) {
       return left(Failure(e.toString()));
     }
-  }
-
-  @override
-  Future<void> signOut() async {
-    await supabase.auth.signOut();
   }
 
   _cacheUser(UserModel user) async {

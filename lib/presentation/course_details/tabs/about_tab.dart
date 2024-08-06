@@ -99,8 +99,9 @@ class CourseAboutTabContent extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Avatar(
-            imageUrl: courseResult.data.instructor.profileImageUrl,
-            placeholder: courseResult.data.instructor.fullName[0],
+            imageUrl:
+                courseResult.data.instructor.instructorProfile?.profileImageUrl,
+            placeholder: courseResult.data.instructorDisplayName[0],
           ),
           8.kW,
           Column(
@@ -109,7 +110,7 @@ class CourseAboutTabContent extends StatelessWidget {
               Row(
                 children: [
                   Text(
-                    courseResult.data.instructor.fullName,
+                    courseResult.data.instructorDisplayName,
                     style: CustomFonts.labelMedium,
                   ),
                   4.kW,
@@ -121,9 +122,9 @@ class CourseAboutTabContent extends StatelessWidget {
                   ),
                 ],
               ),
-              if (courseResult.data.instructor.title != null)
+              if (courseResult.data.instructor.instructorProfile?.title != null)
                 Text(
-                  courseResult.data.instructor.title!,
+                  courseResult.data.instructor.instructorProfile!.title,
                   style: CustomFonts.bodySmall.copyWith(
                     color: CustomColors.textGrey,
                   ),

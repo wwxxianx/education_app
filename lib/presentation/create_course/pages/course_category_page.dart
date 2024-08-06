@@ -75,7 +75,7 @@ class SelectCourseCategoryPage extends StatelessWidget {
                         ),
                         24.kH,
                         const Text(
-                          "Category (Select multiple)",
+                          "Sub-category (Select multiple)",
                           style: CustomFonts.labelMedium,
                         ),
                         if (state.subcategoryError != null)

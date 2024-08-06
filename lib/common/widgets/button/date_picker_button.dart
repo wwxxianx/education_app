@@ -7,8 +7,15 @@ import 'package:heroicons/heroicons.dart';
 /// Flutter code sample for [showDatePicker].
 
 class DatePickerButton extends StatefulWidget {
-  const DatePickerButton({super.key, this.restorationId});
+  final String? placeholder;
   final String? restorationId;
+  final void Function(DateTime selectedDateTime)? onSelected;
+  const DatePickerButton({
+    super.key,
+    this.restorationId,
+    this.placeholder,
+    this.onSelected,
+  });
 
   @override
   State<DatePickerButton> createState() => _DatePickerButtonState();
@@ -46,7 +53,9 @@ class _DatePickerButtonState extends State<DatePickerButton>
         return DatePickerDialog(
           restorationId: 'date_picker_dialog',
           initialEntryMode: DatePickerEntryMode.calendarOnly,
-          initialDate: DateTime.fromMillisecondsSinceEpoch(arguments != null ? arguments as int : DateTime.now().millisecondsSinceEpoch),
+          initialDate: DateTime.fromMillisecondsSinceEpoch(arguments != null
+              ? arguments as int
+              : DateTime.now().millisecondsSinceEpoch),
           firstDate: DateTime(2024),
           lastDate: DateTime(2025),
         );
@@ -65,6 +74,9 @@ class _DatePickerButtonState extends State<DatePickerButton>
     if (newSelectedDate != null) {
       setState(() {
         _selectedDate.value = newSelectedDate;
+        if (widget.onSelected != null) {
+          widget.onSelected!(newSelectedDate);
+        }
         // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         //   content: Text(
         //       'Selected: ${_selectedDate.value.day}/${_selectedDate.value.month}/${_selectedDate.value.year}'),
@@ -85,9 +97,15 @@ class _DatePickerButtonState extends State<DatePickerButton>
           },
           child: Row(
             children: [
-              const HeroIcon(HeroIcons.calendar, size: 20, color: CustomColors.slate700,),
+              const HeroIcon(
+                HeroIcons.calendar,
+                size: 20,
+                color: CustomColors.slate700,
+              ),
               6.kW,
-              Text(_selectedDate.value != null ? '${_selectedDate.value?.day}/${_selectedDate.value?.month}/${_selectedDate.value?.year}' : 'Pick date'),
+              Text(_selectedDate.value != null
+                  ? '${_selectedDate.value?.day}/${_selectedDate.value?.month}/${_selectedDate.value?.year}'
+                  : widget.placeholder ?? 'Pick a date'),
             ],
           ),
         ),

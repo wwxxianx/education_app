@@ -1,5 +1,6 @@
 
-import 'package:education_app/domain/model/user.dart';
+
+import 'package:education_app/domain/model/user/user.dart';
 
 sealed class LoginState {
   const LoginState();

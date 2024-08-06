@@ -22,7 +22,7 @@ class CustomOutlinedTextfield extends StatefulWidget {
   final Widget? suffix;
   final Widget? suffixIcon;
   final EdgeInsetsGeometry? contentPadding;
-  final void Function(String)? onChanged;
+  final void Function(String value)? onChanged;
   final VoidCallback? onTap;
   final void Function(PointerDownEvent)? onTapOutside;
   final String? initialValue;

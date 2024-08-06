@@ -1,6 +1,35 @@
+import 'package:education_app/domain/model/user/instructor_profile.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'user.g.dart';
+
+@JsonSerializable()
+class UserBankAccount {
+  final bool detailsSubmitted;
+  final String id;
+  final UserModel? user;
+  final String userId;
+  final bool payoutsEnabled;
+  final bool chargesEnabled;
+  final String? email;
+  final String? error;
+
+  const UserBankAccount({
+    required this.detailsSubmitted,
+    required this.id,
+    this.user,
+    required this.userId,
+    required this.payoutsEnabled,
+    required this.chargesEnabled,
+    this.email,
+    this.error,
+  });
+
+  factory UserBankAccount.fromJson(Map<String, dynamic> json) =>
+      _$UserBankAccountFromJson(json);
+
+  Map<String, dynamic> toJson() => _$UserBankAccountToJson(this);
+}
 
 @JsonSerializable()
 class UserModel {
@@ -11,6 +40,8 @@ class UserModel {
   final String? phoneNumber;
   final bool isOnboardingCompleted;
   final String refreshToken;
+  final InstructorProfile? instructorProfile;
+  final UserBankAccount? bankAccount;
   // UserPreference? preference;
   // List<CampaignDonation> campaignDonations;
   // List<Campaign> campaigns;
@@ -29,6 +60,8 @@ class UserModel {
     this.phoneNumber = "",
     this.isOnboardingCompleted = false,
     this.refreshToken = "",
+    this.instructorProfile,
+    this.bankAccount,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) =>
@@ -66,6 +99,8 @@ class UserModelWithAccessToken extends UserModel {
     String refreshToken = "",
     bool isOnboardingCompleted = false,
     required this.accessToken,
+    InstructorProfile? instructorProfile,
+    UserBankAccount? bankAccount,
   }) : super(
           id: id,
           fullName: fullName,
@@ -74,6 +109,8 @@ class UserModelWithAccessToken extends UserModel {
           profileImageUrl: profileImageUrl,
           phoneNumber: phoneNumber,
           refreshToken: refreshToken,
+          instructorProfile: instructorProfile,
+          bankAccount: bankAccount,
         );
 
   UserModel toUserModel() {
@@ -85,6 +122,8 @@ class UserModelWithAccessToken extends UserModel {
       phoneNumber: phoneNumber ?? "",
       isOnboardingCompleted: isOnboardingCompleted,
       refreshToken: refreshToken,
+      instructorProfile: instructorProfile,
+      bankAccount: bankAccount,
     );
   }
 

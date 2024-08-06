@@ -1,3 +1,4 @@
+import 'package:badges/badges.dart' as badges;
 import 'package:education_app/common/theme/app_theme.dart';
 import 'package:education_app/common/theme/color.dart';
 import 'package:education_app/common/theme/dimension.dart';
@@ -5,7 +6,6 @@ import 'package:education_app/common/utils/extensions/sized_box_extension.dart';
 import 'package:education_app/common/widgets/badge/custom_badge.dart';
 import 'package:education_app/common/widgets/button/custom_outlined_icon_button.dart';
 import 'package:education_app/common/widgets/container/scaffold_mask.dart';
-import 'package:education_app/common/widgets/course/course_category_toggle_list.dart';
 import 'package:education_app/common/widgets/course/course_list_tile.dart';
 import 'package:education_app/data/network/api_result.dart';
 import 'package:education_app/di/init_dependencies.dart';
@@ -18,11 +18,8 @@ import 'package:education_app/state_management/search/search_course_event.dart';
 import 'package:education_app/state_management/search/search_course_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
-import 'package:heroicons/heroicons.dart';
-import 'package:material_symbols_icons/symbols.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:badges/badges.dart' as badges;
+import 'package:heroicons/heroicons.dart';
 
 class SearchScreen extends StatefulWidget {
   static const String route = '/search';
@@ -178,7 +175,7 @@ class _SearchScreenState extends State<SearchScreen>
           ..add(OnFetchCourses()),
         child: BlocBuilder<SearchCourseBloc, SearchCourseState>(
           builder: (context, state) {
-            final isFilterEmpty = state.selectedCategoryIds.isEmpty;
+            final isFilterEmpty = state.filterLength < 1;
             return Scaffold(
               bottomSheet: Container(
                 margin: const EdgeInsets.only(bottom: 8.0, right: 16.0),
@@ -192,8 +189,8 @@ class _SearchScreenState extends State<SearchScreen>
                       children: [
                         // Filter button
                         CustomBadge(
-                          badgeText: "${state.selectedCategoryIds.length}",
-                          showBadge: !isFilterEmpty,
+                          badgeText: "${state.filterLength}",
+                          showBadge: state.filterLength > 0,
                           position: badges.BadgePosition.topEnd(
                               end: isFilterEmpty ? 60 : 66),
                           child: Container(
@@ -206,15 +203,9 @@ class _SearchScreenState extends State<SearchScreen>
                               ),
                               onPressed: () {
                                 showModalBottomSheet<void>(
-                                  constraints: BoxConstraints(
-                                    maxHeight: MediaQuery.of(context)
-                                            .size
-                                            .height -
-                                        MediaQuery.of(context).viewPadding.top -
-                                        120,
-                                  ),
-                                  useSafeArea: true,
+                                  isDismissible: true,
                                   isScrollControlled: true,
+                                  elevation: 0,
                                   context: context,
                                   builder: (BuildContext ctx) {
                                     return BlocProvider.value(

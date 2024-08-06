@@ -1,4 +1,4 @@
-import 'package:education_app/domain/model/user.dart';
+import 'package:education_app/domain/model/user/user.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'user_review.g.dart';

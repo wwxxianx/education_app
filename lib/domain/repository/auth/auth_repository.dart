@@ -1,5 +1,5 @@
 import 'package:education_app/common/error/failure.dart';
-import 'package:education_app/domain/model/user.dart';
+import 'package:education_app/domain/model/user/user.dart';
 import 'package:fpdart/fpdart.dart';
 
 abstract interface class AuthRepository {
@@ -12,6 +12,6 @@ abstract interface class AuthRepository {
     required String email,
     required String password,
   });
-  
+
   Future<void> signOut();
 }

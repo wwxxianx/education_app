@@ -3,15 +3,13 @@ import 'package:education_app/common/theme/color.dart';
 import 'package:education_app/common/theme/typography.dart';
 import 'package:education_app/common/utils/extensions/sized_box_extension.dart';
 import 'package:education_app/common/utils/extensions/string.dart';
-import 'package:education_app/common/widgets/container/chip.dart';
 import 'package:education_app/common/widgets/container/skeleton.dart';
 import 'package:education_app/common/widgets/container/tag.dart';
 import 'package:education_app/common/widgets/course/course_card.dart';
+import 'package:education_app/common/widgets/course/course_favourite_button.dart';
 import 'package:education_app/domain/model/course/course.dart';
 import 'package:education_app/domain/model/course/enum/course_enum.dart';
-import 'package:education_app/presentation/course_details/course_details_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:heroicons/heroicons.dart';
 
 class CourseListTile extends StatelessWidget {
@@ -24,15 +22,6 @@ class CourseListTile extends StatelessWidget {
     this.showStatusChip = false,
     this.onPressed,
   });
-
-  Widget _buildStatusChip() {
-    final statusEnum =
-        CoursePublishStatus.values.byName(course.status ?? "PUBLISHED");
-    final displayStatus = statusEnum.displayStatus;
-    final chipStyle = statusEnum.chipStyle;
-
-    return CustomChip(style: chipStyle, child: Text(displayStatus));
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +43,7 @@ class CourseListTile extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (showStatusChip) _buildStatusChip(),
+            if (showStatusChip) course.statusEnum.buildStatusChip(),
             if (showStatusChip) 8.kH,
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -83,7 +72,7 @@ class CourseListTile extends StatelessWidget {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Flexible(
+                          Expanded(
                             child: Text(
                               course.title,
                               maxLines: 2,
@@ -92,17 +81,14 @@ class CourseListTile extends StatelessWidget {
                             ),
                           ),
                           // Love button
-                          IconButton(
-                            onPressed: () {},
-                            icon: HeroIcon(
-                              HeroIcons.heart,
-                            ),
+                          CourseFavouriteButton(
+                            course: course,
                           ),
                         ],
                       ),
                       4.kH,
                       Text(
-                        course.instructor.fullName,
+                        course.instructorDisplayName,
                         style: CustomFonts.labelExtraSmall
                             .copyWith(color: CustomColors.textGrey),
                       ),
@@ -123,7 +109,7 @@ class CourseListTile extends StatelessWidget {
                       ),
                       6.kH,
                       Text(
-                        "RM ${course.price}",
+                        course.displayPrice,
                         style: CustomFonts.titleMedium,
                       ),
                     ],

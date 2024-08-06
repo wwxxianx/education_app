@@ -1,5 +1,5 @@
 import 'package:education_app/common/usecase/usecase.dart';
-import 'package:education_app/domain/model/user.dart';
+import 'package:education_app/domain/model/user/user.dart';
 import 'package:education_app/domain/usecases/auth/sign_out.dart';
 import 'package:education_app/domain/usecases/auth/sign_up.dart';
 import 'package:education_app/state_management/sign_up/sign_up_event.dart';

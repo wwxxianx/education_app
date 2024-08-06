@@ -5,20 +5,47 @@ import 'package:education_app/data/network/api_result.dart';
 import 'package:education_app/di/init_dependencies.dart';
 import 'package:education_app/domain/model/constant/language.dart';
 import 'package:education_app/domain/usecases/constant/fetch_languages.dart';
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class LanguageCubit extends Cubit<ApiResult<List<Language>>> {
+final class LanguageState extends Equatable {
+  final ApiResult<List<Language>> languagesResult;
+
+  const LanguageState({
+    required this.languagesResult,
+  });
+
+  factory LanguageState.initial() {
+    return const LanguageState(
+      languagesResult: ApiResultInitial(),
+    );
+  }
+
+  LanguageState copyWith({
+    ApiResult<List<Language>>? languagesResult,
+  }) {
+    return LanguageState(
+      languagesResult: languagesResult ?? this.languagesResult,
+    );
+  }
+
+  @override
+  List<Object> get props => [languagesResult];
+}
+
+class LanguageCubit extends Cubit<LanguageState> {
   final FetchLanguages _fetchLanguages;
   LanguageCubit({required FetchLanguages fetchLanguages})
       : _fetchLanguages = fetchLanguages,
-        super(const ApiResultLoading());
+        super(LanguageState.initial());
 
   Future<void> fetchLanguages() async {
     final res = await _fetchLanguages.call(NoPayload());
     res.fold(
-      (l) => emit(ApiResultFailure(l.errorMessage)),
-      (r) => emit(ApiResultSuccess(r)),
+      (failure) => emit(state.copyWith(
+          languagesResult: ApiResultFailure(failure.errorMessage))),
+      (data) => emit(state.copyWith(languagesResult: ApiResultSuccess(data))),
     );
   }
 }
@@ -52,20 +79,21 @@ class LanguagesDropdownMenu extends StatelessWidget {
       create: (context) => LanguageCubit(
         fetchLanguages: serviceLocator(),
       )..fetchLanguages(),
-      child: BlocBuilder<LanguageCubit, ApiResult<List<Language>>>(
+      child: BlocBuilder<LanguageCubit, LanguageState>(
         builder: (context, state) {
-          if (state is ApiResultLoading) {
+          final languagesResult = state.languagesResult;
+          if (languagesResult is ApiResultLoading) {
             return Text("loading...");
           }
-          if (state is ApiResultFailure) {
+          if (languagesResult is ApiResultFailure) {
             return Text("error...");
           }
-          if (state is ApiResultSuccess<List<Language>>) {
+          if (languagesResult is ApiResultSuccess<List<Language>>) {
             return CustomDropdownMenu(
               label: 'Language of instruction',
               errorText: errorText,
               initialSelection: initialSelection,
-              dropdownMenuEntries: _buildDropdownMenuItems(state),
+              dropdownMenuEntries: _buildDropdownMenuItems(languagesResult),
               onSelected: (languageId) {
                 if (onSelected != null && languageId != null) {
                   onSelected!(languageId);

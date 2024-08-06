@@ -76,6 +76,6 @@ class NetworkInterceptorJWT extends Interceptor {
         return;
       }
     }
-    return handler.next(err);
+    return handler.reject(err);
   }
 }

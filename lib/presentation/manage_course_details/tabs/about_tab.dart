@@ -3,6 +3,7 @@ import 'package:education_app/common/theme/dimension.dart';
 import 'package:education_app/common/theme/typography.dart';
 import 'package:education_app/common/utils/extensions/sized_box_extension.dart';
 import 'package:education_app/common/widgets/avatar/avatar.dart';
+import 'package:education_app/common/widgets/button/custom_button.dart';
 import 'package:education_app/common/widgets/container/skeleton.dart';
 import 'package:education_app/data/network/api_result.dart';
 import 'package:education_app/domain/model/course/course.dart';
@@ -99,8 +100,9 @@ class ManageCourseAboutTabContent extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Avatar(
-            imageUrl: courseResult.data.instructor.profileImageUrl,
-            placeholder: courseResult.data.instructor.fullName[0],
+            imageUrl:
+                courseResult.data.instructor.instructorProfile?.profileImageUrl,
+            placeholder: courseResult.data.instructorDisplayName,
           ),
           8.kW,
           Column(
@@ -109,7 +111,7 @@ class ManageCourseAboutTabContent extends StatelessWidget {
               Row(
                 children: [
                   Text(
-                    courseResult.data.instructor.fullName,
+                    courseResult.data.instructorDisplayName,
                     style: CustomFonts.labelMedium,
                   ),
                   4.kW,
@@ -121,9 +123,9 @@ class ManageCourseAboutTabContent extends StatelessWidget {
                   ),
                 ],
               ),
-              if (courseResult.data.instructor.title != null)
+              if (courseResult.data.instructor.instructorProfile?.title != null)
                 Text(
-                  courseResult.data.instructor.title!,
+                  courseResult.data.instructor.instructorProfile!.title,
                   style: CustomFonts.bodySmall.copyWith(
                     color: CustomColors.textGrey,
                   ),
@@ -189,36 +191,88 @@ class ManageCourseAboutTabContent extends StatelessWidget {
               _buildInstructorContent(courseResult),
               28.kH,
               // What you'll learn
-              const Text(
-                "What you'll learn",
-                style: CustomFonts.titleMedium,
+              Row(
+                children: [
+                  const Text(
+                    "What you'll learn",
+                    style: CustomFonts.titleMedium,
+                  ),
+                  8.kW,
+                  SmallEditButton(
+                    onPressed: () {},
+                  ),
+                ],
               ),
               8.kH,
               _buildLearningContent(courseResult),
 
               28.kH,
               // Requirements
-              const Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  "Requirements",
-                  style: CustomFonts.titleMedium,
-                ),
+              Row(
+                children: [
+                  const Text(
+                    "Requirements",
+                    style: CustomFonts.titleMedium,
+                  ),
+                  8.kW,
+                  SmallEditButton(
+                    onPressed: () {},
+                  ),
+                ],
               ),
               8.kH,
               _buildRequirementsContent(courseResult),
               28.kH,
               // Overview
-              const Text(
-                "Overview",
-                style: CustomFonts.titleMedium,
+              Row(
+                children: [
+                  const Text(
+                    "Overview",
+                    style: CustomFonts.titleMedium,
+                  ),
+                  8.kW,
+                  SmallEditButton(
+                    onPressed: () {},
+                  ),
+                ],
               ),
-              8.kH,
               _buildOverviewContent(courseResult),
             ],
           ),
         );
       },
+    );
+  }
+}
+
+class SmallEditButton extends StatelessWidget {
+  final VoidCallback onPressed;
+  const SmallEditButton({super.key, required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomButton(
+      style: CustomButtonStyle.secondaryBlue,
+      borderRadius: BorderRadius.circular(4),
+      border: Border.all(color: CustomColors.slate300),
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      onPressed: onPressed,
+      height: 24,
+      child: Row(
+        children: [
+          const HeroIcon(
+            HeroIcons.pencil,
+            size: 14.0,
+            color: CustomColors.primaryBlue,
+          ),
+          4.kW,
+          Text(
+            "Edit",
+            style: CustomFonts.labelExtraSmall
+                .copyWith(color: CustomColors.primaryBlue),
+          )
+        ],
+      ),
     );
   }
 }

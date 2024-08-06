@@ -1,5 +1,5 @@
 import 'package:education_app/data/network/api_result.dart';
-import 'package:education_app/domain/model/user.dart';
+import 'package:education_app/domain/model/user/user.dart';
 import 'package:equatable/equatable.dart';
 
 final class OnboardingState extends Equatable {

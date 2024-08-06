@@ -6,7 +6,8 @@ sealed class MyCourseEvent {
 }
 
 final class OnFetchMyCourses extends MyCourseEvent {
+  final String currentUserId;
   final VoidCallback? onSuccess;
 
-  const OnFetchMyCourses({this.onSuccess});
+  const OnFetchMyCourses({required this.currentUserId, this.onSuccess});
 }

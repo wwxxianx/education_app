@@ -27,8 +27,14 @@ class _InstructorBottomNavigationBarState
     if (location.startsWith(MyCourseScreen.route)) {
       return 0;
     }
-    if (location.startsWith(InstructorSubscriptionScreen.route)) {
+    if (location.startsWith("/bank")) {
       return 1;
+    }
+    if (location.startsWith(InstructorSubscriptionScreen.route)) {
+      return 2;
+    }
+    if (location.startsWith("/my-instructor-profile")) {
+      return 3;
     }
     return 0;
   }
@@ -38,7 +44,11 @@ class _InstructorBottomNavigationBarState
       case 0:
         GoRouter.of(context).go(MyCourseScreen.route);
       case 1:
+        GoRouter.of(context).go("/bank");
+      case 2:
         GoRouter.of(context).go(InstructorSubscriptionScreen.route);
+      case 3:
+        GoRouter.of(context).go("/my-instructor-profile");
     }
   }
 
@@ -60,9 +70,19 @@ class _InstructorBottomNavigationBarState
           label: "My Course",
         ),
         BottomNavigationBarItem(
+          icon: SvgPicture.asset("assets/icons/credit-card.svg"),
+          activeIcon: SvgPicture.asset("assets/icons/credit-card-filled.svg"),
+          label: "Bank",
+        ),
+        BottomNavigationBarItem(
           icon: SvgPicture.asset("assets/icons/bill.svg"),
           activeIcon: SvgPicture.asset("assets/icons/bill-filled.svg"),
           label: "Subscription",
+        ),
+        BottomNavigationBarItem(
+          icon: SvgPicture.asset("assets/icons/user-circle.svg"),
+          activeIcon: SvgPicture.asset("assets/icons/user-circle-active.svg"),
+          label: "Profile",
         ),
       ],
       currentIndex: _getCurrentIndex(context),

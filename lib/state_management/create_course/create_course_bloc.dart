@@ -1,7 +1,7 @@
 import 'package:education_app/common/utils/extensions/string.dart';
 import 'package:education_app/common/utils/input_validator.dart';
 import 'package:education_app/data/network/api_result.dart';
-import 'package:education_app/data/network/payload/course/create_course_payload.dart';
+import 'package:education_app/data/network/payload/course/course_payload.dart';
 import 'package:education_app/domain/usecases/course/create_course.dart';
 import 'package:education_app/state_management/create_course/create_course_event.dart';
 import 'package:education_app/state_management/create_course/create_course_state.dart';

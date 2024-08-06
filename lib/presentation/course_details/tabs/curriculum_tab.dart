@@ -1,29 +1,56 @@
 import 'package:education_app/common/theme/color.dart';
-import 'package:education_app/common/theme/dimension.dart';
 import 'package:education_app/common/theme/typography.dart';
 import 'package:education_app/common/utils/extensions/sized_box_extension.dart';
-import 'package:education_app/common/widgets/avatar/avatar.dart';
-import 'package:education_app/common/widgets/container/skeleton.dart';
+import 'package:education_app/common/utils/show_snackbar.dart';
 import 'package:education_app/data/network/api_result.dart';
 import 'package:education_app/domain/model/course/course.dart';
+import 'package:education_app/domain/model/course/enum/course_enum.dart';
+import 'package:education_app/domain/model/user/user_course.dart';
 import 'package:education_app/presentation/video_player/video_player_wrapper_screen.dart';
 import 'package:education_app/state_management/course_details/course_details_bloc.dart';
 import 'package:education_app/state_management/course_details/course_details_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fpdart/fpdart.dart' as fp;
 import 'package:go_router/go_router.dart';
-import 'package:heroicons/heroicons.dart';
-import 'package:material_symbols_icons/symbols.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class CurriculumTabContent extends StatelessWidget {
-  const CurriculumTabContent({super.key});
+  final String courseId;
+  const CurriculumTabContent({
+    super.key,
+    required this.courseId,
+  });
 
-  Widget _buildCurriculumContent(ApiResult<Course> courseResult) {
+  Widget _buildCurriculumContent(BuildContext context) {
+    final courseResult = context.watch<CourseDetailsBloc>().state.courseResult;
+    final userCourseResult =
+        context.watch<CourseDetailsBloc>().state.userCourseResult;
+
     if (courseResult is ApiResultSuccess<Course>) {
-      return CurriculumExpansionPanel(
-        courseSections: courseResult.data.sections,
+      return CurriculumContent(
+        sections: courseResult.data.sections,
+        onPartContentPressed: (sectionIndex, part) {
+          if (userCourseResult is ApiResultSuccess<UserCourse?> &&
+              userCourseResult.data != null) {
+            context.push("/my-learning/$courseId");
+            return;
+          }
+          if (sectionIndex == 0) {
+            // Allow access
+            if (part.resource.mimeTypeEnum == CourseResourceMimeType.VIDEO) {
+              context.push(VideoPlayerWrapperScreen.route,
+                  extra: part.resource.url);
+              return;
+            }
+            launchUrl(
+              Uri.parse(part.resource.url),
+            );
+            return;
+          }
+          // Dont allow access
+          context.showSnackBar('Purchase course to access the content');
+        },
       );
     }
     return Text("loading");
@@ -41,11 +68,27 @@ class CurriculumTabContent extends StatelessWidget {
           ),
           child: Column(
             children: [
-              _buildCurriculumContent(courseResult),
+              _buildCurriculumContent(context),
             ],
           ),
         );
       },
+    );
+  }
+}
+
+class CurriculumContent extends StatelessWidget {
+  final List<CourseSection> sections;
+  final void Function(int sectionIndex, CoursePart partContent)
+      onPartContentPressed;
+  const CurriculumContent(
+      {super.key, required this.sections, required this.onPartContentPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return CurriculumExpansionPanel(
+      courseSections: sections,
+      onPartContentPressed: onPartContentPressed,
     );
   }
 }
@@ -64,9 +107,12 @@ class CurriculumExpandItem {
 
 class CurriculumExpansionPanel extends StatefulWidget {
   final List<CourseSection> courseSections;
+  final void Function(int sectionIndex, CoursePart partContent)
+      onPartContentPressed;
   const CurriculumExpansionPanel({
     super.key,
     required this.courseSections,
+    required this.onPartContentPressed,
   });
 
   @override
@@ -94,13 +140,14 @@ class _CurriculumExpansionPanelState extends State<CurriculumExpansionPanel> {
     }
   }
 
-  void _handlePartContentPressed(CoursePart partContent) {
-    if (partContent.isVideoIncluded) {
-      context.push(
-        VideoPlayerWrapperScreen.route,
-        extra: partContent.resourceUrl,
-      );
-    }
+  void _handlePartContentPressed(int sectionIndex, CoursePart partContent) {
+    widget.onPartContentPressed(sectionIndex, partContent);
+    // if (partContent.resource.mimeTypeEnum == CourseResourceMimeType.VIDEO) {
+    //   context.push(
+    //     VideoPlayerWrapperScreen.route,
+    //     extra: partContent.resource.url,
+    //   );
+    // }
   }
 
   Widget _buildPartsContent(int sectionIndex) {
@@ -113,7 +160,7 @@ class _CurriculumExpansionPanelState extends State<CurriculumExpansionPanel> {
             widget.courseSections[sectionIndex].parts[index];
         return InkWell(
           onTap: () {
-            _handlePartContentPressed(partContent);
+            _handlePartContentPressed(sectionIndex, partContent);
           },
           child: Row(
             children: [
@@ -136,7 +183,7 @@ class _CurriculumExpansionPanelState extends State<CurriculumExpansionPanel> {
                       style: CustomFonts.bodyMedium,
                     ),
                     Text(
-                      partContent.isVideoIncluded ? "Video" : "Article",
+                      partContent.resource.mimeTypeEnum.displayLabel,
                       style: CustomFonts.labelExtraSmall
                           .copyWith(color: CustomColors.textGrey),
                     ),
@@ -145,11 +192,7 @@ class _CurriculumExpansionPanelState extends State<CurriculumExpansionPanel> {
               ),
               IconButton(
                 onPressed: () {},
-                icon: HeroIcon(
-                  partContent.isVideoIncluded
-                      ? HeroIcons.playCircle
-                      : HeroIcons.chevronRight,
-                ),
+                icon: partContent.resource.mimeTypeEnum.buildIcon(),
               ),
               6.kW,
             ],

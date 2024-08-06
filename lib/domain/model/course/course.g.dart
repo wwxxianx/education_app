@@ -17,12 +17,26 @@ Map<String, dynamic> _$CourseLevelToJson(CourseLevel instance) =>
       'level': instance.level,
     };
 
+CourseResource _$CourseResourceFromJson(Map<String, dynamic> json) =>
+    CourseResource(
+      id: json['id'] as String,
+      url: json['url'] as String,
+      mimeType: json['mimeType'] as String,
+    );
+
+Map<String, dynamic> _$CourseResourceToJson(CourseResource instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'url': instance.url,
+      'mimeType': instance.mimeType,
+    };
+
 CoursePart _$CoursePartFromJson(Map<String, dynamic> json) => CoursePart(
       id: json['id'] as String,
       order: (json['order'] as num).toInt(),
       title: json['title'] as String,
-      isVideoIncluded: json['isVideoIncluded'] as bool,
-      resourceUrl: json['resourceUrl'] as String,
+      resource:
+          CourseResource.fromJson(json['resource'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$CoursePartToJson(CoursePart instance) =>
@@ -30,8 +44,7 @@ Map<String, dynamic> _$CoursePartToJson(CoursePart instance) =>
       'id': instance.id,
       'order': instance.order,
       'title': instance.title,
-      'isVideoIncluded': instance.isVideoIncluded,
-      'resourceUrl': instance.resourceUrl,
+      'resource': instance.resource,
     };
 
 CourseSection _$CourseSectionFromJson(Map<String, dynamic> json) =>
@@ -39,7 +52,7 @@ CourseSection _$CourseSectionFromJson(Map<String, dynamic> json) =>
       id: json['id'] as String,
       order: (json['order'] as num).toInt(),
       title: json['title'] as String,
-      parts: (json['course_parts'] as List<dynamic>)
+      parts: (json['parts'] as List<dynamic>)
           .map((e) => CoursePart.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
@@ -49,22 +62,26 @@ Map<String, dynamic> _$CourseSectionToJson(CourseSection instance) =>
       'id': instance.id,
       'order': instance.order,
       'title': instance.title,
-      'course_parts': instance.parts,
+      'parts': instance.parts,
     };
 
 Course _$CourseFromJson(Map<String, dynamic> json) => Course(
       id: json['id'] as String,
       title: json['title'] as String,
       description: json['description'] as String,
-      level: CourseLevel.fromJson(json['levels'] as Map<String, dynamic>),
-      status: json['status'] as String?,
+      level: CourseLevel.fromJson(json['level'] as Map<String, dynamic>),
+      instructor:
+          UserModel.fromJson(json['instructor'] as Map<String, dynamic>),
+      status: json['status'] as String,
       thumbnailUrl: json['thumbnailUrl'] as String?,
       reviewRating: (json['reviewRating'] as num?)?.toDouble(),
-      instructor: CourseInstructor.fromJson(
-          json['course_instructors'] as Map<String, dynamic>),
       category:
-          CourseCategory.fromJson(json['categories'] as Map<String, dynamic>),
-      price: (json['price'] as num).toDouble(),
+          CourseCategory.fromJson(json['category'] as Map<String, dynamic>),
+      subcategories: (json['subcategories'] as List<dynamic>?)
+              ?.map((e) => CourseCategory.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
+      price: (json['price'] as num).toInt(),
       createdAt: json['createdAt'] as String,
       updatedAt: json['updatedAt'] as String,
       language: Language.fromJson(json['language'] as Map<String, dynamic>),
@@ -77,11 +94,11 @@ Course _$CourseFromJson(Map<String, dynamic> json) => Course(
               ?.map((e) => CourseUpdate.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
-      sections: (json['course_sections'] as List<dynamic>?)
+      sections: (json['sections'] as List<dynamic>?)
               ?.map((e) => CourseSection.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
-      images: (json['course_images'] as List<dynamic>?)
+      images: (json['images'] as List<dynamic>?)
               ?.map((e) => ImageModel.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
@@ -96,11 +113,12 @@ Map<String, dynamic> _$CourseToJson(Course instance) => <String, dynamic>{
       'id': instance.id,
       'title': instance.title,
       'description': instance.description,
-      'levels': instance.level,
+      'level': instance.level,
       'status': instance.status,
       'thumbnailUrl': instance.thumbnailUrl,
-      'course_instructors': instance.instructor,
-      'categories': instance.category,
+      'category': instance.category,
+      'subcategories': instance.subcategories,
+      'instructor': instance.instructor,
       'price': instance.price,
       'reviewRating': instance.reviewRating,
       'createdAt': instance.createdAt,
@@ -108,10 +126,10 @@ Map<String, dynamic> _$CourseToJson(Course instance) => <String, dynamic>{
       'language': instance.language,
       'topics': instance.topics,
       'requirements': instance.requirements,
-      'course_images': instance.images,
+      'images': instance.images,
       'videoUrl': instance.videoUrl,
       'updates': instance.updates,
-      'course_sections': instance.sections,
+      'sections': instance.sections,
       'reviews': instance.reviews,
     };
 
