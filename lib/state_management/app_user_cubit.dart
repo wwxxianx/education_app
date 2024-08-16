@@ -1,6 +1,7 @@
 import 'package:education_app/common/usecase/usecase.dart';
 import 'package:education_app/data/network/api_result.dart';
 import 'package:education_app/domain/model/notification/notification.dart';
+import 'package:education_app/domain/model/user/course_progress.dart';
 import 'package:education_app/domain/model/user/user.dart';
 import 'package:education_app/domain/model/voucher/user_voucher.dart';
 import 'package:education_app/domain/usecases/auth/get_current_user.dart';
@@ -8,6 +9,7 @@ import 'package:education_app/domain/usecases/auth/sign_out.dart';
 import 'package:education_app/domain/usecases/notification/fetch_notifications.dart';
 import 'package:education_app/domain/usecases/notification/read_notification.dart';
 import 'package:education_app/domain/usecases/user/fetch_my_vouchers.dart';
+import 'package:education_app/domain/usecases/user/fetch_recent_course_progress.dart';
 import 'package:education_app/state_management/app_user_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -23,6 +25,7 @@ class AppUserCubit extends Cubit<AppUserState> {
   final ToggleReadNotification _toggleReadNotification;
   final SupabaseClient _supabase;
   final SignOut _signOut;
+  final FetchRecentCourseProgress _fetchRecentCourseProgress;
   // final FetchNumOfReceivedUnusedGiftCards _fetchNumOfReceivedUnusedGiftCards;
   AppUserCubit({
     required GetCurrentUser getCurrentUser,
@@ -31,12 +34,14 @@ class AppUserCubit extends Cubit<AppUserState> {
     required ToggleReadNotification toggleReadNotification,
     required SupabaseClient supabase,
     required SignOut signOut,
+    required FetchRecentCourseProgress fetchRecentCourseProgress,
   })  : _getCurrentUser = getCurrentUser,
         _fetchMyVouchers = fetchMyVouchers,
         _fetchNotifications = fetchNotifications,
         _toggleReadNotification = toggleReadNotification,
         _supabase = supabase,
         _signOut = signOut,
+        _fetchRecentCourseProgress = fetchRecentCourseProgress,
         //       _fetchNumOfReceivedUnusedGiftCards = fetchNumOfReceivedUnusedGiftCards,
         super(const AppUserState.initial());
 
@@ -161,6 +166,18 @@ class AppUserCubit extends Cubit<AppUserState> {
     if (vouchersResult is ApiResultSuccess<List<UserVoucher>>) {
       currentVoucher = vouchersResult.data;
     }
-    emit(state.copyWith(vouchersResult: ApiResultSuccess([voucher, ...currentVoucher])));
+    emit(state.copyWith(
+        vouchersResult: ApiResultSuccess([voucher, ...currentVoucher])));
+  }
+
+  Future<void> fetchRecentCourseProgress() async {
+    final res = await _fetchRecentCourseProgress.call(NoPayload());
+    res.fold((failure) => null, (data) {
+      emit(state.copyWith(recentCourseProgress: data));
+    });
+  }
+
+  Future<void> updateRecentCourseProgress(CourseProgress data) async {
+    emit(state.copyWith(recentCourseProgress: data));
   }
 }

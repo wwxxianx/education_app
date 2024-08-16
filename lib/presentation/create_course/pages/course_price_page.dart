@@ -7,11 +7,13 @@ import 'package:education_app/common/widgets/button/custom_button.dart';
 import 'package:education_app/common/widgets/input/money_input.dart';
 import 'package:education_app/data/network/api_result.dart';
 import 'package:education_app/domain/model/course/course.dart';
+import 'package:education_app/presentation/my_course/my_course_screen.dart';
 import 'package:education_app/state_management/create_course/create_course_bloc.dart';
 import 'package:education_app/state_management/create_course/create_course_event.dart';
 import 'package:education_app/state_management/create_course/create_course_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:toastification/toastification.dart';
 
 class CoursePricePage extends StatefulWidget {
@@ -33,6 +35,7 @@ class _CoursePricePageState extends State<CoursePricePage> {
 
   void _handleSubmit() {
     context.read<CreateCourseBloc>().add(OnCreateCourse(onSuccess: () {
+      context.pushReplacement(MyCourseScreen.route);
       toastification.show(
         title: Text("Created course!"),
       );

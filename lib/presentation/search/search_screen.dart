@@ -8,7 +8,6 @@ import 'package:education_app/common/widgets/button/custom_outlined_icon_button.
 import 'package:education_app/common/widgets/container/scaffold_mask.dart';
 import 'package:education_app/common/widgets/course/course_list_tile.dart';
 import 'package:education_app/data/network/api_result.dart';
-import 'package:education_app/di/init_dependencies.dart';
 import 'package:education_app/domain/model/course/course.dart';
 import 'package:education_app/presentation/search/widgets/animated_search_bar.dart';
 import 'package:education_app/presentation/search/widgets/animated_search_result_container.dart';
@@ -46,7 +45,11 @@ class _SearchScreenState extends State<SearchScreen>
     );
     _searchResultContainerAnimation = CurvedAnimation(
         parent: _searchResultContainerController, curve: Curves.fastOutSlowIn);
-
+    final bloc = context.read<SearchCourseBloc>();
+    final coursesResult = bloc.state.coursesResult;
+    if (coursesResult is! ApiResultSuccess<List<Course>>) {
+      bloc.add(OnFetchCourses());
+    }
     // WidgetsBinding.instance.addPostFrameCallback(
     //   (_) async {
     //     final giftCardBloc = context.read<GiftCardBloc>();
@@ -170,114 +173,110 @@ class _SearchScreenState extends State<SearchScreen>
           surfaceTintColor: Colors.transparent,
         ),
       ),
-      child: BlocProvider(
-        create: (context) => SearchCourseBloc(fetchCourses: serviceLocator())
-          ..add(OnFetchCourses()),
-        child: BlocBuilder<SearchCourseBloc, SearchCourseState>(
-          builder: (context, state) {
-            final isFilterEmpty = state.filterLength < 1;
-            return Scaffold(
-              bottomSheet: Container(
-                margin: const EdgeInsets.only(bottom: 8.0, right: 16.0),
-                color: Colors.transparent,
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Stack(
-                      alignment: Alignment.bottomRight,
-                      children: [
-                        // Filter button
-                        CustomBadge(
-                          badgeText: "${state.filterLength}",
-                          showBadge: state.filterLength > 0,
-                          position: badges.BadgePosition.topEnd(
-                              end: isFilterEmpty ? 60 : 66),
-                          child: Container(
-                            margin:
-                                EdgeInsets.only(right: isFilterEmpty ? 68 : 74),
-                            child: CustomOutlinedIconButton(
-                              border: Border.all(
-                                color: CustomColors.containerBorderBlue,
-                                width: 1.5,
-                              ),
-                              onPressed: () {
-                                showModalBottomSheet<void>(
-                                  isDismissible: true,
-                                  isScrollControlled: true,
-                                  elevation: 0,
-                                  context: context,
-                                  builder: (BuildContext ctx) {
-                                    return BlocProvider.value(
-                                      value: BlocProvider.of<SearchCourseBloc>(
-                                          context),
-                                      child: const CourseFilterBottomSheet(),
-                                    );
-                                  },
-                                );
-                              },
-                              icon: const HeroIcon(
-                                HeroIcons.adjustmentsHorizontal,
-                                size: 35.0,
-                                color: Colors.white,
-                              ),
+      child: BlocBuilder<SearchCourseBloc, SearchCourseState>(
+        builder: (context, state) {
+          final isFilterEmpty = state.filterLength < 1;
+          return Scaffold(
+            bottomSheet: Container(
+              margin: const EdgeInsets.only(bottom: 8.0, right: 16.0),
+              color: Colors.transparent,
+              child: Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Stack(
+                    alignment: Alignment.bottomRight,
+                    children: [
+                      // Filter button
+                      CustomBadge(
+                        badgeText: "${state.filterLength}",
+                        showBadge: state.filterLength > 0,
+                        position: badges.BadgePosition.topEnd(
+                            end: isFilterEmpty ? 60 : 66),
+                        child: Container(
+                          margin:
+                              EdgeInsets.only(right: isFilterEmpty ? 68 : 74),
+                          child: CustomOutlinedIconButton(
+                            border: Border.all(
+                              color: CustomColors.containerBorderBlue,
+                              width: 1.5,
+                            ),
+                            onPressed: () {
+                              showModalBottomSheet<void>(
+                                isDismissible: true,
+                                isScrollControlled: true,
+                                elevation: 0,
+                                context: context,
+                                builder: (BuildContext ctx) {
+                                  return BlocProvider.value(
+                                    value: BlocProvider.of<SearchCourseBloc>(
+                                        context),
+                                    child: const CourseFilterBottomSheet(),
+                                  );
+                                },
+                              );
+                            },
+                            icon: const HeroIcon(
+                              HeroIcons.adjustmentsHorizontal,
+                              size: 35.0,
+                              color: Colors.white,
                             ),
                           ),
                         ),
+                      ),
 
-                        Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            if (isSearching)
-                              AnimatedSearchResultContainer(
-                                scaleAnimation: _searchResultContainerAnimation,
-                              ),
-                            12.kH,
-                            CustomBadge(
-                              showBadge: state.searchQuery != null &&
-                                  state.searchQuery!.isNotEmpty,
-                              badgeText: "1",
-                              child: AnimatedSearchBar(
-                                autoFocus: true,
-                                textInputAction: TextInputAction.search,
-                                textController: _searchTextController,
-                                width: MediaQuery.of(context).size.width -
-                                    Dimensions.screenHorizontalPadding,
-                                onSubmitted: (string) {
-                                  _handleSearch(context, string);
-                                },
-                                onSuffixTap: () {
-                                  _hideSearchResultContainer();
-                                },
-                                searchBarOpen: (integer) {
-                                  _showSearchResultContainer();
-                                },
-                              ),
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          if (isSearching)
+                            AnimatedSearchResultContainer(
+                              scaleAnimation: _searchResultContainerAnimation,
                             ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              body: Stack(
-                children: [
-                  SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        _buildCourseContentLayout(state),
-                      ],
-                    ),
+                          12.kH,
+                          CustomBadge(
+                            showBadge: state.searchQuery != null &&
+                                state.searchQuery!.isNotEmpty,
+                            badgeText: "1",
+                            child: AnimatedSearchBar(
+                              autoFocus: true,
+                              textInputAction: TextInputAction.search,
+                              textController: _searchTextController,
+                              width: MediaQuery.of(context).size.width -
+                                  Dimensions.screenHorizontalPadding,
+                              onSubmitted: (string) {
+                                _handleSearch(context, string);
+                              },
+                              onSuffixTap: () {
+                                _hideSearchResultContainer();
+                              },
+                              searchBarOpen: (integer) {
+                                _showSearchResultContainer();
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                  if (isSearching) const ScaffoldMask()
                 ],
               ),
-            );
-          },
-        ),
+            ),
+            body: Stack(
+              children: [
+                SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      _buildCourseContentLayout(state),
+                    ],
+                  ),
+                ),
+                if (isSearching) const ScaffoldMask()
+              ],
+            ),
+          );
+        },
       ),
     );
   }

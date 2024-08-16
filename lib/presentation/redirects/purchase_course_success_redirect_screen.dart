@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class PurchaseCourseSuccessRedirectScreen extends StatefulWidget {
+  static const route = '/purchase-success-redirect';
   const PurchaseCourseSuccessRedirectScreen({super.key});
 
   @override

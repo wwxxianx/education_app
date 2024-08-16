@@ -55,7 +55,7 @@ class CourseListTile extends StatelessWidget {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(6),
                       child: CachedNetworkImage(
-                        imageUrl: course.images.firstOrNull?.imageUrl ?? '',
+                        imageUrl: course.images.firstOrNull?.imageUrl ?? course.thumbnailUrl ?? "",
                         errorWidget: (context, url, error) {
                           return Skeleton();
                         },
@@ -105,7 +105,7 @@ class CourseListTile extends StatelessWidget {
                       ),
                       6.kH,
                       ReviewStar(
-                        review: 4,
+                        review: course.reviewRating,
                       ),
                       6.kH,
                       Text(

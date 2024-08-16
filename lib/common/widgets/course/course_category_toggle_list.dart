@@ -9,7 +9,6 @@ import 'package:education_app/domain/usecases/course_category/fetch_all_course_c
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fpdart/fpdart.dart';
 
 final class CourseCategoriesState extends Equatable {
   final ApiResult<List<CourseCategory>> categoriesResult;
@@ -123,16 +122,19 @@ class CourseCategoryList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<CourseCategoriesCubit, CourseCategoriesState>(
-      builder: (context, state) {
-        final categoriesResult = state.categoriesResult;
-        return Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          direction: Axis.horizontal,
-          children: _buildContent(categoriesResult),
-        );
-      },
+    return BlocProvider(
+      create: (context) => CourseCategoriesCubit(fetchAllCourseCategories: serviceLocator())..fetchCourseCategories(),
+      child: BlocBuilder<CourseCategoriesCubit, CourseCategoriesState>(
+        builder: (context, state) {
+          final categoriesResult = state.categoriesResult;
+          return Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            direction: Axis.horizontal,
+            children: _buildContent(categoriesResult),
+          );
+        },
+      ),
     );
   }
 }

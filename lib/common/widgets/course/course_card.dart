@@ -2,17 +2,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:education_app/common/theme/color.dart';
 import 'package:education_app/common/theme/typography.dart';
 import 'package:education_app/common/utils/extensions/sized_box_extension.dart';
-import 'package:education_app/common/widgets/button/custom_outlined_icon_button.dart';
 import 'package:education_app/common/widgets/container/tag.dart';
 import 'package:education_app/common/widgets/course/course_favourite_button.dart';
-import 'package:education_app/data/network/api_result.dart';
 import 'package:education_app/domain/model/course/course.dart';
-import 'package:education_app/domain/model/user/user_favourite_course.dart';
-import 'package:education_app/state_management/user_favourite_course/user_favourite_course_bloc.dart';
-import 'package:education_app/state_management/user_favourite_course/user_favourite_course_event.dart';
-import 'package:education_app/state_management/user_favourite_course/user_favourite_course_state.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:heroicons/heroicons.dart';
@@ -59,7 +52,9 @@ class CourseCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                    CourseFavouriteButton(course: course,),
+                    CourseFavouriteButton(
+                      course: course,
+                    ),
                   ],
                 ),
                 6.kH,
@@ -81,9 +76,7 @@ class CourseCard extends StatelessWidget {
                       ),
                       8.kH,
                       ReviewStar(
-                        review: course.reviewRating == null
-                            ? 4.0
-                            : course.reviewRating!,
+                        review: course.reviewRating,
                       ),
                       8.kH,
                       CustomTag.blue(

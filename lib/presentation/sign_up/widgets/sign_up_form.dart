@@ -5,6 +5,7 @@ import 'package:education_app/common/utils/show_snackbar.dart';
 import 'package:education_app/common/widgets/button/custom_button.dart';
 import 'package:education_app/common/widgets/input/outlined_text_field.dart';
 import 'package:education_app/presentation/explore/explore_screen.dart';
+import 'package:education_app/presentation/onboarding/onboarding_screen.dart';
 import 'package:education_app/state_management/app_user_cubit.dart';
 import 'package:education_app/state_management/sign_up/sign_up_bloc.dart';
 import 'package:education_app/state_management/sign_up/sign_up_event.dart';
@@ -35,7 +36,7 @@ class _SignUpFormState extends State<SignUpForm> with InputValidator {
               password: passwordController.text,
               onSuccess: (user) {
                 context.read<AppUserCubit>().updateUser(user);
-                context.go(ExploreScreen.route);
+                context.go(OnboardingScreen.route);
               },
             ),
           );

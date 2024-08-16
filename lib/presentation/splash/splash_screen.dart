@@ -78,8 +78,9 @@ class _SplashScreenState extends State<SplashScreen>
       // context.read<GiftCardBloc>().add(OnFetchAllGiftCards());
       context.read<AppUserCubit>()
         ..fetchUserVouchers()
-        ..fetchNotifications();
-      context.read<ExploreBloc>().add(OnFetchPopularCourses());
+        ..fetchNotifications()
+        ..fetchRecentCourseProgress();
+      context.read<ExploreBloc>()..add(OnFetchPopularCourses())..add(OnFetchPurchaseRecommendedCourse())..add(OnFetchPreferenceRecommendedCourse());
     }
   }
 

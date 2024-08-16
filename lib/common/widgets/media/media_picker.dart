@@ -369,7 +369,10 @@ class ImagePreviewContainer extends StatelessWidget {
 
   Widget _buildImage() {
     if (imageUrl != null && imageUrl!.isNotEmpty) {
-      return CachedNetworkImage(imageUrl: imageUrl!, fit: BoxFit.cover);
+      return CachedNetworkImage(
+        imageUrl: imageUrl!,
+        fit: BoxFit.cover,
+      );
     }
     return Image.file(
       file!,

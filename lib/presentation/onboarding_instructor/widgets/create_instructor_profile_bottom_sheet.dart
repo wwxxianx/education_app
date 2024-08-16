@@ -12,6 +12,8 @@ import 'package:education_app/data/network/payload/user/instructor_profile_paylo
 import 'package:education_app/di/init_dependencies.dart';
 import 'package:education_app/presentation/my_course/my_course_screen.dart';
 import 'package:education_app/presentation/onboarding_instructor/cubit/create_instructor_cubit.dart';
+import 'package:education_app/state_management/app_user_cubit.dart';
+import 'package:education_app/state_management/app_user_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -33,7 +35,12 @@ class _CreateInstructorProfileBottomSheetState
   @override
   void initState() {
     super.initState();
-    fullNameController = TextEditingController();
+    final appUserState = context.read<AppUserCubit>().state;
+    final currentUser = appUserState.currentUser;
+    if (currentUser == null) {
+      return;
+    }
+    fullNameController = TextEditingController(text: currentUser.fullName);
     titleController = TextEditingController();
   }
 
@@ -73,12 +80,14 @@ class _CreateInstructorProfileBottomSheetState
               width: double.maxFinite,
               child: Padding(
                 padding: const EdgeInsets.symmetric(
-                    horizontal: Dimensions.screenHorizontalPadding,
-                    vertical: 10,
-                    ),
+                  horizontal: Dimensions.screenHorizontalPadding,
+                  vertical: 10,
+                ),
                 child: CustomButton(
-                  isLoading: state.createInstructorProfileResult is ApiResultLoading,
-                  enabled: state.createInstructorProfileResult is! ApiResultLoading,
+                  isLoading:
+                      state.createInstructorProfileResult is ApiResultLoading,
+                  enabled:
+                      state.createInstructorProfileResult is! ApiResultLoading,
                   onPressed: () {
                     _handleSubmit(context);
                   },
@@ -96,12 +105,18 @@ class _CreateInstructorProfileBottomSheetState
                     style: CustomFonts.titleMedium,
                   ),
                   20.kH,
-                  SingleImagePicker(
-                    size: 150,
-                    onFileChanged: (file) {
-                      setState(() {
-                        selectedFile = file;
-                      });
+                  BlocBuilder<AppUserCubit, AppUserState>(
+                    builder: (context, state) {
+                      final currentUser = state.currentUser;
+                      return SingleImagePicker(
+                        size: 150,
+                        onFileChanged: (file) {
+                          setState(() {
+                            selectedFile = file;
+                          });
+                        },
+                        previewImageUrl: currentUser?.profileImageUrl,
+                      );
                     },
                   ),
                   CustomOutlinedTextfield(
@@ -112,6 +127,7 @@ class _CreateInstructorProfileBottomSheetState
                   CustomOutlinedTextfield(
                     label: "Your title",
                     controller: titleController,
+                    hintText: "Netflix Tech Lead",
                   ),
                 ],
               ),

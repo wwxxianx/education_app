@@ -1,5 +1,6 @@
 import 'package:education_app/common/theme/typography.dart';
 import 'package:education_app/common/widgets/course/course_list_tile.dart';
+import 'package:education_app/common/widgets/empty_illustration.dart';
 import 'package:education_app/data/network/api_result.dart';
 import 'package:education_app/di/init_dependencies.dart';
 import 'package:education_app/domain/model/course/course.dart';
@@ -19,13 +20,20 @@ class MyLearningScreen extends StatelessWidget {
     final bloc = context.read<MyLearningBloc>();
     final coursesResult = bloc.state.coursesResult;
     if (coursesResult is ApiResultLoading) {
-      return Text("Loading...");
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
     }
     if (coursesResult is ApiResultFailure<List<UserCourse>>) {
       return Text(
           coursesResult.errorMessage ?? "Failed to fetch your learning");
     }
     if (coursesResult is ApiResultSuccess<List<UserCourse>>) {
+      if (coursesResult.data.isEmpty) {
+        return const EmptyIllustration(
+          title: "Seems like you haven't start any course",
+        );
+      }
       return ListView.builder(
         shrinkWrap: true,
         itemCount: coursesResult.data.length,
@@ -47,7 +55,8 @@ class MyLearningScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) =>
-          MyLearningBloc(fetchLearningCourses: serviceLocator())..add(OnFetchMyLearningCourses()),
+          MyLearningBloc(fetchLearningCourses: serviceLocator())
+            ..add(OnFetchMyLearningCourses()),
       child: Scaffold(
         appBar: AppBar(
           title: Text(

@@ -1,4 +1,8 @@
+import 'package:education_app/domain/model/course/course.dart';
 import 'package:education_app/presentation/account/account_screen.dart';
+import 'package:education_app/presentation/account_favorite_course/favorite_course_screen.dart';
+import 'package:education_app/presentation/account_preference/account_preference_screen.dart';
+import 'package:education_app/presentation/account_preference/bloc/account_preference_bloc.dart';
 import 'package:education_app/presentation/create_course/create_course_screen.dart';
 import 'package:education_app/presentation/explore/explore_screen.dart';
 import 'package:education_app/presentation/instructor_subscription/instructor_subscription_screen.dart';
@@ -14,6 +18,7 @@ import 'package:education_app/presentation/notification/notification_screen.dart
 import 'package:education_app/presentation/onboarding_instructor/instructor_onboarding_screen.dart';
 import 'package:education_app/presentation/purchase/purchase_screen.dart';
 import 'package:education_app/presentation/redirects/instructor_account_redirect_screen.dart';
+import 'package:education_app/presentation/redirects/purchase_course_success_redirect_screen.dart';
 import 'package:education_app/presentation/search/search_screen.dart';
 import 'package:education_app/presentation/sign_up/sign_up_screen.dart';
 import 'package:education_app/presentation/splash/splash_screen.dart';
@@ -63,15 +68,30 @@ class AppRouter {
                       path: ":courseId",
                       builder: (context, state) {
                         final courseId = state.pathParameters['courseId'] ?? "";
+                        final coursePart = state.extra as CoursePart?;
                         return MyLearningDetailsScreen(
                           courseId: courseId,
+                          progressCoursePart: coursePart,
                         );
                       },
                     ),
                   ]),
               GoRoute(
+                // parentNavigatorKey: _userShellNavigatorKey,
                 path: AccountScreen.route,
                 builder: (context, state) => const AccountScreen(),
+                routes: [
+                  GoRoute(
+                    parentNavigatorKey: _rootNavigatorKey,
+                    path: 'favorite',
+                    builder: (context, state) => const FavoriteCourseScreen(),
+                  ),
+                  GoRoute(
+                    parentNavigatorKey: _rootNavigatorKey,
+                    path: 'preference',
+                    builder: (context, state) => const AccountPreferencesScreen(),
+                  ),
+                ],
               ),
             ],
           ),
@@ -118,6 +138,10 @@ class AppRouter {
           GoRoute(
             path: InstructorRedirectScreen.route,
             builder: (context, state) => const InstructorRedirectScreen(), //
+          ),
+          GoRoute(
+            path: PurchaseCourseSuccessRedirectScreen.route,
+            builder: (context, state) => const PurchaseCourseSuccessRedirectScreen(), //
           ),
           GoRoute(
             path: NotificationScreen.route,

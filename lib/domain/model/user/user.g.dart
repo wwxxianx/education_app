@@ -48,6 +48,9 @@ UserModel _$UserModelFromJson(Map<String, dynamic> json) => UserModel(
           ? null
           : UserBankAccount.fromJson(
               json['bankAccount'] as Map<String, dynamic>),
+      preference: json['preference'] == null
+          ? null
+          : UserPreference.fromJson(json['preference'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$UserModelToJson(UserModel instance) => <String, dynamic>{
@@ -60,6 +63,7 @@ Map<String, dynamic> _$UserModelToJson(UserModel instance) => <String, dynamic>{
       'refreshToken': instance.refreshToken,
       'instructorProfile': instance.instructorProfile,
       'bankAccount': instance.bankAccount,
+      'preference': instance.preference,
     };
 
 UserModelWithAccessToken _$UserModelWithAccessTokenFromJson(
@@ -81,6 +85,9 @@ UserModelWithAccessToken _$UserModelWithAccessTokenFromJson(
           ? null
           : UserBankAccount.fromJson(
               json['bankAccount'] as Map<String, dynamic>),
+      preference: json['preference'] == null
+          ? null
+          : UserPreference.fromJson(json['preference'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$UserModelWithAccessTokenToJson(
@@ -95,5 +102,6 @@ Map<String, dynamic> _$UserModelWithAccessTokenToJson(
       'refreshToken': instance.refreshToken,
       'instructorProfile': instance.instructorProfile,
       'bankAccount': instance.bankAccount,
+      'preference': instance.preference,
       'accessToken': instance.accessToken,
     };

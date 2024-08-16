@@ -7,7 +7,6 @@ import 'package:education_app/common/widgets/course/course_category_toggle_list.
 import 'package:education_app/data/network/api_result.dart';
 import 'package:education_app/data/network/payload/user/user_profile_payload.dart';
 import 'package:education_app/di/init_dependencies.dart';
-import 'package:education_app/domain/usecases/user/update_user_profile.dart';
 import 'package:education_app/presentation/explore/explore_screen.dart';
 import 'package:education_app/presentation/onboarding/widgets/onboarding_progress_bar.dart';
 import 'package:education_app/state_management/onboarding/onboarding_bloc.dart';
@@ -107,16 +106,13 @@ class OnboardingPreferencePage extends StatelessWidget {
   const OnboardingPreferencePage({super.key});
 
   void _handleSubmit(BuildContext context) {
-    final payload = UserProfilePayload(
-        fullName: null, isOnBoardingCompleted: true, profileImageFile: null);
     context.read<OnboardingBloc>().add(
-          CompleteOnboarding(
-            payload: payload,
-            onSuccess: () {
-              context.go(ExploreScreen.route);
-            },
-          ),
-        );
+      CompleteOnboarding(
+        onSuccess: () {
+          context.go(ExploreScreen.route);
+        },
+      ),
+    );
   }
 
   @override
@@ -126,7 +122,7 @@ class OnboardingPreferencePage extends StatelessWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               "Let us help you to find what\nyou need to learn!",
               style: CustomFonts.titleLarge,
             ),
@@ -138,8 +134,13 @@ class OnboardingPreferencePage extends StatelessWidget {
             ),
             20.kH,
             CourseCategoryList(
-              onPressed: (category) {},
-              selectedCategoryIds: ['1'],
+              onPressed: (category) {
+                context
+                    .read<OnboardingBloc>()
+                    .add(OnSelectCourseCategory(category: category));
+              },
+              selectedCategoryIds:
+                  state.selectedCourseCategories.map((e) => e.id).toList(),
             ),
             24.kH,
             SizedBox(
@@ -151,7 +152,7 @@ class OnboardingPreferencePage extends StatelessWidget {
                 onPressed: () {
                   _handleSubmit(context);
                 },
-                child: Text("Do it later"),
+                child: const Text("Do it later"),
               ),
             ),
             8.kH,
@@ -160,9 +161,10 @@ class OnboardingPreferencePage extends StatelessWidget {
               child: CustomButton(
                 isLoading: state.updateUserResult is ApiResultLoading,
                 enabled: state.updateUserResult is! ApiResultLoading,
-                style: CustomButtonStyle.secondaryBlue,
-                onPressed: () {},
-                child: Text("Let's start"),
+                onPressed: () {
+                  _handleSubmit(context);
+                },
+                child: const Text("Let's start"),
               ),
             ),
           ],
@@ -220,7 +222,11 @@ class OnboardingPageTwo extends StatelessWidget {
         20.kH,
         Image.asset("assets/images/onboarding-illustration-2.png"),
         20.kH,
-        Text("All courses you need!"),
+        const Text(
+          "All courses you need!",
+          textAlign: TextAlign.center,
+          style: CustomFonts.titleExtraLarge,
+        ),
         20.kH,
         SizedBox(
           width: 200,

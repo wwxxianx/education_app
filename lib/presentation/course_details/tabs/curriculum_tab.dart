@@ -17,9 +17,11 @@ import 'package:url_launcher/url_launcher.dart';
 
 class CurriculumTabContent extends StatelessWidget {
   final String courseId;
+  final CoursePart? currentFocusPart;
   const CurriculumTabContent({
     super.key,
     required this.courseId,
+    this.currentFocusPart,
   });
 
   Widget _buildCurriculumContent(BuildContext context) {
@@ -29,6 +31,7 @@ class CurriculumTabContent extends StatelessWidget {
 
     if (courseResult is ApiResultSuccess<Course>) {
       return CurriculumContent(
+        currentFocusPart: currentFocusPart,
         sections: courseResult.data.sections,
         onPartContentPressed: (sectionIndex, part) {
           if (userCourseResult is ApiResultSuccess<UserCourse?> &&
@@ -78,17 +81,23 @@ class CurriculumTabContent extends StatelessWidget {
 }
 
 class CurriculumContent extends StatelessWidget {
+  final CoursePart? currentFocusPart;
   final List<CourseSection> sections;
   final void Function(int sectionIndex, CoursePart partContent)
       onPartContentPressed;
-  const CurriculumContent(
-      {super.key, required this.sections, required this.onPartContentPressed});
+  const CurriculumContent({
+    super.key,
+    required this.sections,
+    required this.onPartContentPressed,
+    required this.currentFocusPart,
+  });
 
   @override
   Widget build(BuildContext context) {
     return CurriculumExpansionPanel(
       courseSections: sections,
       onPartContentPressed: onPartContentPressed,
+      currentFocusPart: currentFocusPart,
     );
   }
 }
@@ -106,6 +115,7 @@ class CurriculumExpandItem {
 }
 
 class CurriculumExpansionPanel extends StatefulWidget {
+  final CoursePart? currentFocusPart;
   final List<CourseSection> courseSections;
   final void Function(int sectionIndex, CoursePart partContent)
       onPartContentPressed;
@@ -113,6 +123,7 @@ class CurriculumExpansionPanel extends StatefulWidget {
     super.key,
     required this.courseSections,
     required this.onPartContentPressed,
+    required this.currentFocusPart,
   });
 
   @override
@@ -162,40 +173,51 @@ class _CurriculumExpansionPanelState extends State<CurriculumExpansionPanel> {
           onTap: () {
             _handlePartContentPressed(sectionIndex, partContent);
           },
-          child: Row(
-            children: [
-              Container(
-                margin: const EdgeInsets.only(left: 20),
-                width: 30,
-                child: Text(
-                  index.toString(),
-                  style: CustomFonts.labelSmall,
-                  textAlign: TextAlign.center,
+          child: Container(
+            decoration: BoxDecoration(
+              color: partContent.id == widget.currentFocusPart?.id
+                  ? CustomColors.lightBlue
+                  : Colors.white,
+              border: partContent.id == widget.currentFocusPart?.id
+                  ? const Border.symmetric(
+                      horizontal: BorderSide(color: CustomColors.primaryBlue))
+                  : null,
+            ),
+            child: Row(
+              children: [
+                Container(
+                  margin: const EdgeInsets.only(left: 20),
+                  width: 30,
+                  child: Text(
+                    index.toString(),
+                    style: CustomFonts.labelSmall,
+                    textAlign: TextAlign.center,
+                  ),
                 ),
-              ),
-              4.kW,
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      partContent.title,
-                      style: CustomFonts.bodyMedium,
-                    ),
-                    Text(
-                      partContent.resource.mimeTypeEnum.displayLabel,
-                      style: CustomFonts.labelExtraSmall
-                          .copyWith(color: CustomColors.textGrey),
-                    ),
-                  ],
+                4.kW,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        partContent.title,
+                        style: CustomFonts.bodyMedium,
+                      ),
+                      Text(
+                        partContent.resource.mimeTypeEnum.displayLabel,
+                        style: CustomFonts.labelExtraSmall
+                            .copyWith(color: CustomColors.textGrey),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              IconButton(
-                onPressed: () {},
-                icon: partContent.resource.mimeTypeEnum.buildIcon(),
-              ),
-              6.kW,
-            ],
+                IconButton(
+                  onPressed: () {},
+                  icon: partContent.resource.mimeTypeEnum.buildIcon(),
+                ),
+                6.kW,
+              ],
+            ),
           ),
         );
       },

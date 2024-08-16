@@ -81,12 +81,14 @@ class CoursePart extends Equatable {
   final int order;
   final String title;
   final CourseResource resource;
+  final String courseSectionId;
 
   const CoursePart({
     required this.id,
     required this.order,
     required this.title,
     required this.resource,
+    required this.courseSectionId,
   });
 
   factory CoursePart.fromJson(Map<String, dynamic> json) =>
@@ -94,28 +96,13 @@ class CoursePart extends Equatable {
 
   Map<String, dynamic> toJson() => _$CoursePartToJson(this);
 
-  static final samples = [
-    CoursePart(
-      id: '1',
-      order: 1,
-      title: 'What is this course for?',
-      resource: CourseResource.samples.first,
-    ),
-    CoursePart(
-      id: '2',
-      order: 2,
-      title: 'Introduction to Python',
-      resource: CourseResource.samples.first,
-    ),
-  ];
-  
   @override
   List<Object?> get props => [
-    id,
-    order,
-    title,
-    resource,
-  ];
+        id,
+        order,
+        title,
+        resource,
+      ];
 }
 
 @JsonSerializable()
@@ -129,8 +116,22 @@ class CourseSection {
     required this.id,
     required this.order,
     required this.title,
-    required this.parts,
+    this.parts = const [],
   });
+
+  CourseSection copyWith({
+    String? id,
+    int? order,
+    String? title,
+    List<CoursePart>? parts,
+  }) {
+    return CourseSection(
+      id: id ?? this.id,
+      order: order ?? this.order,
+      title: title ?? this.title,
+      parts: parts ?? this.parts,
+    );
+  }
 
   factory CourseSection.fromJson(Map<String, dynamic> json) =>
       _$CourseSectionFromJson(json);
@@ -142,25 +143,25 @@ class CourseSection {
       id: '1',
       order: 1,
       title: "Introduction to Python",
-      parts: CoursePart.samples,
+      // parts: CoursePart.samples,
     ),
     CourseSection(
       id: '1',
       order: 1,
       title: "Function in Python",
-      parts: CoursePart.samples,
+      // parts: CoursePart.samples,
     ),
     CourseSection(
       id: '1',
       order: 1,
       title: "OOP in Python",
-      parts: CoursePart.samples,
+      // parts: CoursePart.samples,
     ),
     CourseSection(
       id: '1',
       order: 1,
       title: "Introduction to Python",
-      parts: CoursePart.samples,
+      // parts: CoursePart.samples,
     ),
   ];
 }
@@ -177,7 +178,7 @@ class Course {
   final List<CourseCategory> subcategories;
   final UserModel instructor;
   final int price;
-  final double? reviewRating;
+  final double reviewRating;
   final String createdAt;
   final String updatedAt;
   final Language language;
@@ -207,6 +208,54 @@ class Course {
     return "RM ${price / 100}";
   }
 
+  Course copyWith({
+    String? id,
+    String? title,
+    String? description,
+    CourseLevel? level,
+    UserModel? instructor,
+    String? status,
+    String? thumbnailUrl,
+    CourseCategory? category,
+    List<CourseCategory>? subcategories,
+    int? price,
+    double? reviewRating,
+    String? createdAt,
+    String? updatedAt,
+    Language? language,
+    List<String>? topics,
+    List<String>? requirements,
+    List<ImageModel>? images,
+    String? videoUrl,
+    List<CourseUpdate>? updates,
+    List<CourseSection>? sections,
+    List<UserReview>? reviews,
+  }) {
+    return Course(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      level: level ?? this.level,
+      instructor: instructor ?? this.instructor,
+      status: status ?? this.status,
+      category: category ?? this.category,
+      price: price ?? this.price,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      language: language ?? this.language,
+      topics: topics ?? this.topics,
+      requirements: requirements ?? this.requirements,
+      images: images ?? this.images,
+      reviewRating: reviewRating ?? this.reviewRating,
+      reviews: reviews ?? this.reviews,
+      sections: sections ?? this.sections,
+      subcategories: subcategories ?? this.subcategories,
+      thumbnailUrl: thumbnailUrl ?? this.thumbnailUrl,
+      updates: updates ?? this.updates,
+      videoUrl: videoUrl ?? this.videoUrl,
+    );
+  }
+
   const Course({
     required this.id,
     required this.title,
@@ -215,7 +264,7 @@ class Course {
     required this.instructor,
     required this.status,
     this.thumbnailUrl,
-    this.reviewRating,
+    required this.reviewRating,
     required this.category,
     this.subcategories = const [],
     required this.price,
@@ -261,6 +310,7 @@ class Course {
       reviews: UserReview.samples,
       status: "DRAFT",
       instructor: UserModel.sample,
+      reviewRating: 3,
     ),
     Course(
       id: '2',
@@ -287,6 +337,7 @@ class Course {
       reviews: UserReview.samples,
       status: "PUBLISHED",
       instructor: UserModel.sample,
+      reviewRating: 3,
     ),
     Course(
       id: '3',
@@ -313,6 +364,7 @@ class Course {
       sections: CourseSection.samples,
       reviews: UserReview.samples,
       status: "PUBLISHED",
+      reviewRating: 3,
     ),
   ];
 
@@ -372,4 +424,32 @@ class CourseUpdate {
       createdAt: '2024-05-16T08:21:57.324Z',
     ),
   ];
+}
+
+@JsonSerializable()
+class CourseSummary {
+  final String id;
+  final String title;
+  final String description;
+  final String? thumbnailUrl;
+  final int price;
+  final String createdAt;
+  final String updatedAt;
+  final String? videoUrl;
+
+  const CourseSummary({
+    required this.id,
+    required this.title,
+    required this.description,
+    this.thumbnailUrl,
+    required this.price,
+    required this.createdAt,
+    required this.updatedAt,
+    this.videoUrl,
+  });
+
+  factory CourseSummary.fromJson(Map<String, dynamic> json) =>
+      _$CourseSummaryFromJson(json);
+
+  Map<String, dynamic> toJson() => _$CourseSummaryToJson(this);
 }

@@ -20,9 +20,6 @@ class AnimatedSearchResultContainer extends StatefulWidget {
 class _AnimatedSearchResultContainerState
     extends State<AnimatedSearchResultContainer>
     with SingleTickerProviderStateMixin {
-
-
-
   @override
   Widget build(BuildContext context) {
     return ScaleTransition(
@@ -91,19 +88,6 @@ class CampaignSearchRecommendation extends StatelessWidget {
           ),
         ),
         18.kH,
-        Text(
-          "Search by campaign organizer:",
-          style: CustomFonts.bodyMedium.copyWith(
-            color: CustomColors.textGrey,
-          ),
-        ),
-        Text(
-          "E.g.,  Bill Gates Foundation",
-          style: CustomFonts.bodyMedium.copyWith(
-            color: CustomColors.textGrey,
-          ),
-        ),
-        18.kH,
         RichText(
           text: TextSpan(
             text: "Tips: Use the filter to search by ",
@@ -112,7 +96,7 @@ class CampaignSearchRecommendation extends StatelessWidget {
             ),
             children: [
               TextSpan(
-                text: "location / category",
+                text: "level / category",
                 style: CustomFonts.titleMedium.copyWith(
                   color: CustomColors.textGrey,
                 ),

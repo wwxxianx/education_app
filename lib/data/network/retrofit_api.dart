@@ -4,21 +4,26 @@ import 'package:dio/dio.dart';
 import 'package:education_app/common/constants/constants.dart';
 import 'package:education_app/data/network/payload/auth/login_be_payload.dart';
 import 'package:education_app/data/network/payload/auth/sign_up_payload.dart';
+import 'package:education_app/data/network/payload/course/course_review_payload.dart';
+import 'package:education_app/data/network/payload/course/course_section_payload.dart';
 import 'package:education_app/data/network/payload/payment/course_payment_intent_payload.dart';
-import 'package:education_app/data/network/payload/stripe/update_connect_account_payload.dart';
+import 'package:education_app/data/network/payload/user/course_progress_payload.dart';
 import 'package:education_app/data/network/payload/user/favourite_course_payload.dart';
 import 'package:education_app/data/network/payload/voucher/claim_voucher_payload.dart';
 import 'package:education_app/data/network/payload/voucher/voucher_payload.dart';
 import 'package:education_app/data/network/response/auth/tokens_response.dart';
+import 'package:education_app/data/network/response/course/recommended_course.dart';
 import 'package:education_app/data/network/response/payment/payment_intent_response.dart';
 import 'package:education_app/domain/model/constant/language.dart';
 import 'package:education_app/domain/model/course/course.dart';
 import 'package:education_app/domain/model/course/course_faq.dart';
 import 'package:education_app/domain/model/course/enum/course_enum.dart';
+import 'package:education_app/domain/model/course/user_review.dart';
 import 'package:education_app/domain/model/course_category/course_category.dart';
 import 'package:education_app/domain/model/notification/notification.dart';
 import 'package:education_app/domain/model/stripe/connect_account_response.dart';
 import 'package:education_app/domain/model/stripe/stripe_account.dart';
+import 'package:education_app/domain/model/user/course_progress.dart';
 import 'package:education_app/domain/model/user/instructor_profile.dart';
 import 'package:education_app/domain/model/user/user.dart';
 import 'package:education_app/domain/model/user/user_course.dart';
@@ -50,7 +55,16 @@ abstract class RestClient {
     @Part(name: "fullName") String? fullName,
     @Part(name: "profileImageFile") File? profileImageFile,
     @Part(name: "isOnboardingCompleted") bool? isOnboardingCompleted,
+    @Part(name: "preferenceCourseCategoryIds")
+    List<String>? preferenceCourseCategoryIds,
   });
+
+  @GET("users/recommended-course/preference")
+  Future<List<Course>> findRecommendedCourseFromPreference();
+
+  @GET("users/recommended-course/purchase")
+  Future<RecommendedCourseFromPurchaseHistory>
+      findRecommendedCourseFromPurchaseHistory();
 
   @GET("users/{id}/instructor-profile")
   Future<InstructorProfile?> getInstructorProfile(
@@ -105,7 +119,7 @@ abstract class RestClient {
     @Part(name: "title") required String title,
     @Part(name: "topics") required List<String> topics,
     @Part(name: "subcategoryIds") required List<String> subcategoryIds,
-    @Part(name: "languageIds") required String languageId,
+    @Part(name: "languageId") required String languageId,
     @Part(name: "sectionOneTitle") required String sectionOneTitle,
     @Part(name: "price") double? price,
     @Part(name: "courseImages") required List<File> courseImages,
@@ -188,4 +202,47 @@ abstract class RestClient {
   @PATCH("users/notifications/{id}")
   Future<NotificationModel> updateNotificationToRead(
       {@Path("id") required String notificationId});
+
+  // Courser progress
+  @PATCH("users/progress")
+  Future<CourseProgress> updateCourseProgress(
+      {@Body() required CourseProgressPayload payload});
+
+  @GET("users/progress")
+  Future<CourseProgress> getRecentCourseProgress();
+
+  // Course review
+  @GET("course-reviews/course/{id}")
+  Future<List<UserReview>> getCourseReviews({
+    @Path("id") required String courseId,
+    @Query("limit") int? limit,
+  });
+
+  @POST("course-reviews")
+  Future<UserReview> createCourseReview({
+    @Body() required CourseReviewPayload paylaod,
+  });
+
+  @PATCH("courses/sections/{id}")
+  Future<CourseSection> updateCourseSection({
+    @Path("id") required String sectionId,
+    @Body() required UpdateCourseSectionPayload payload,
+  });
+
+  @POST("courses/sections")
+  @MultiPart()
+  Future<CourseSection> createCourseSection({
+    @Part(name: 'courseId') required String courseId,
+    @Part(name: 'title') required String title,
+    @Part(name: 'coursePartsTitle') List<String> coursePartsTitle = const [],
+    @Part(name: 'resourceFiles') List<File> resourceFiles = const [],
+  });
+
+  @POST("courses/parts")
+  @MultiPart()
+  Future<CoursePart> createCoursePart({
+    @Part(name: 'sectionId') required String sectionId,
+    @Part(name: 'title') required String title,
+    @Part(name: 'resourceFile') required File resourceFile,
+  });
 }

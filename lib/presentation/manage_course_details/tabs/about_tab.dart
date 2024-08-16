@@ -7,6 +7,9 @@ import 'package:education_app/common/widgets/button/custom_button.dart';
 import 'package:education_app/common/widgets/container/skeleton.dart';
 import 'package:education_app/data/network/api_result.dart';
 import 'package:education_app/domain/model/course/course.dart';
+import 'package:education_app/presentation/manage_course_details/widgets/edit_overview_bottom_sheet.dart';
+import 'package:education_app/presentation/manage_course_details/widgets/edit_requirement_bottom_sheet.dart';
+import 'package:education_app/presentation/manage_course_details/widgets/edit_topic_bottom_sheet.dart';
 import 'package:education_app/state_management/manage_course_details/manage_course_details_bloc.dart';
 import 'package:education_app/state_management/manage_course_details/manage_course_details_state.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +17,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:heroicons/heroicons.dart';
 
 class ManageCourseAboutTabContent extends StatelessWidget {
-  const ManageCourseAboutTabContent({super.key});
+  final String courseId;
+  const ManageCourseAboutTabContent({
+    super.key,
+    required this.courseId,
+  });
 
   Widget _buildLoadingList() {
     return ListView.builder(
@@ -168,6 +175,53 @@ class ManageCourseAboutTabContent extends StatelessWidget {
     );
   }
 
+  void _showEditTopicBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      isDismissible: true,
+      elevation: 0,
+      builder: (modalContext) {
+        return BlocProvider.value(
+          value: BlocProvider.of<ManageCourseDetailsBloc>(context),
+          child: EditTopicBottomSheet(courseId: courseId),
+        );
+      },
+    );
+  }
+
+  void _showEditRequirementBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      isDismissible: true,
+      elevation: 0,
+      builder: (modalContext) {
+        return BlocProvider.value(
+          value: BlocProvider.of<ManageCourseDetailsBloc>(context),
+          child: EditRequirementBottomSheet(
+            courseId: courseId,
+          ),
+        );
+      },
+    );
+  }
+
+  void _showEditOverviewBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      isDismissible: true,
+      elevation: 0,
+      builder: (modalContext) {
+        return BlocProvider.value(
+          value: BlocProvider.of<ManageCourseDetailsBloc>(context),
+          child: EditOverviewBottomSheet(courseId: courseId),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ManageCourseDetailsBloc, ManageCourseDetailsState>(
@@ -199,7 +253,9 @@ class ManageCourseAboutTabContent extends StatelessWidget {
                   ),
                   8.kW,
                   SmallEditButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      _showEditTopicBottomSheet(context);
+                    },
                   ),
                 ],
               ),
@@ -216,7 +272,9 @@ class ManageCourseAboutTabContent extends StatelessWidget {
                   ),
                   8.kW,
                   SmallEditButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      _showEditRequirementBottomSheet(context);
+                    },
                   ),
                 ],
               ),
@@ -232,7 +290,9 @@ class ManageCourseAboutTabContent extends StatelessWidget {
                   ),
                   8.kW,
                   SmallEditButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      _showEditOverviewBottomSheet(context);
+                    },
                   ),
                 ],
               ),

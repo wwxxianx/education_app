@@ -16,12 +16,14 @@ import 'package:education_app/domain/model/course/enum/course_enum.dart';
 import 'package:education_app/presentation/manage_course_details/tabs/tab_view.dart';
 import 'package:education_app/presentation/manage_course_details/widgets/before_content.dart';
 import 'package:education_app/presentation/manage_course_details/widgets/bottom_sheet_nav.dart';
+import 'package:education_app/presentation/manage_course_details/widgets/edit_details_bottom_sheet.dart';
 import 'package:education_app/state_management/manage_course_details/manage_course_details_bloc.dart';
 import 'package:education_app/state_management/manage_course_details/manage_course_details_event.dart';
 import 'package:education_app/state_management/manage_course_details/manage_course_details_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:heroicons/heroicons.dart';
+import 'package:toastification/toastification.dart';
 
 class ManageCourseDetailsScreen extends StatelessWidget {
   final String courseId;
@@ -32,13 +34,15 @@ class ManageCourseDetailsScreen extends StatelessWidget {
 
   Widget _buildContent(ApiResult<Course> courseResult) {
     if (courseResult is ApiResultSuccess<Course>) {
-      return ManageCourseDetailsSuccessContent();
+      return ManageCourseDetailsSuccessContent(courseId: courseId);
     }
     if (courseResult is ApiResultLoading) {
       return ManageCourseDetailsLoadingContent();
     }
     if (courseResult is ApiResultFailure<Course>) {
-      return ManageCourseDetailsSuccessContent();
+      return ManageCourseDetailsSuccessContent(
+        courseId: courseId,
+      );
     }
     return const SizedBox.shrink();
   }
@@ -53,13 +57,25 @@ class ManageCourseDetailsScreen extends StatelessWidget {
         updateCourseFAQ: serviceLocator(),
         createCourseVoucher: serviceLocator(),
         fetchCourseVouchers: serviceLocator(),
+        updateCourseSection: serviceLocator(),
+        createCoursePart: serviceLocator(),
+        createCourseSection: serviceLocator(),
       )..add(OnFetchCourse(courseId)),
       child: BlocConsumer<ManageCourseDetailsBloc, ManageCourseDetailsState>(
         listener: (context, state) {
           final updateCourseResult = state.updateCourseResult;
+          final updateCourseSectionResult = state.submitCourseSectionResult;
           if (updateCourseResult is ApiResultFailure<Course>) {
-            context.showSnackBar(
-                updateCourseResult.errorMessage ?? 'Something went wrong');
+            toastification.show(
+                type: ToastificationType.error,
+                title: Text(
+                    updateCourseResult.errorMessage ?? 'Something went wrong'));
+          }
+          if (updateCourseSectionResult is ApiResultFailure<CourseSection>) {
+            toastification.show(
+                type: ToastificationType.error,
+                title: Text(updateCourseSectionResult.errorMessage ??
+                    'Something went wrong'));
           }
         },
         builder: (context, state) {
@@ -101,7 +117,8 @@ class ManageCourseDetailsScreen extends StatelessWidget {
 }
 
 class ManageCourseDetailsSuccessContent extends StatelessWidget {
-  const ManageCourseDetailsSuccessContent({super.key});
+  final String courseId;
+  const ManageCourseDetailsSuccessContent({super.key, required this.courseId});
 
   void _handlePublishCourse(
       BuildContext context, Course course, CoursePublishStatus newStatus) {
@@ -145,9 +162,50 @@ class ManageCourseDetailsSuccessContent extends StatelessWidget {
     }
   }
 
+  void _showEditOverviewBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      isDismissible: true,
+      elevation: 0,
+      builder: (modalContext) {
+        return BlocProvider.value(
+          value: BlocProvider.of<ManageCourseDetailsBloc>(context),
+          child: EditCourseDetailsBottomSheet(
+            courseId: courseId,
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ManageCourseDetailsBloc, ManageCourseDetailsState>(
+    return BlocConsumer<ManageCourseDetailsBloc, ManageCourseDetailsState>(
+      listener: (context, state) {
+        var errorMessage = "Something went wrong";
+        final updateCourseResult = state.updateCourseResult;
+        final submitCoursePartResult = state.submitCoursePartResult;
+        final submitCourseSectionResult = state.submitCourseSectionResult;
+        if (updateCourseResult is ApiResultFailure<Course> &&
+            updateCourseResult.errorMessage != null) {
+          errorMessage = updateCourseResult.errorMessage!;
+          toastification.show(
+              type: ToastificationType.error, title: Text(errorMessage));
+        }
+        if (submitCoursePartResult is ApiResultFailure<CoursePart> &&
+            submitCoursePartResult.errorMessage != null) {
+          errorMessage = submitCoursePartResult.errorMessage!;
+          toastification.show(
+              type: ToastificationType.error, title: Text(errorMessage));
+        }
+        if (submitCourseSectionResult is ApiResultFailure<CourseSection> &&
+            submitCourseSectionResult.errorMessage != null) {
+          errorMessage = submitCourseSectionResult.errorMessage!;
+          toastification.show(
+              type: ToastificationType.error, title: Text(errorMessage));
+        }
+      },
       builder: (context, state) {
         final courseResult = state.courseResult;
         if (courseResult is ApiResultSuccess<Course>) {
@@ -181,7 +239,7 @@ class ManageCourseDetailsSuccessContent extends StatelessWidget {
                     ),
                     12.kH,
                     ReviewStar(
-                      review: courseResult.data.reviewRating ?? 4.0,
+                      review: courseResult.data.reviewRating,
                     ),
                     12.kH,
                     Text(
@@ -193,7 +251,9 @@ class ManageCourseDetailsSuccessContent extends StatelessWidget {
                       width: double.maxFinite,
                       child: CustomButton(
                         style: CustomButtonStyle.secondaryBlue,
-                        onPressed: () {},
+                        onPressed: () {
+                          _showEditOverviewBottomSheet(context);
+                        },
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -208,8 +268,7 @@ class ManageCourseDetailsSuccessContent extends StatelessWidget {
                         ),
                       ),
                     ),
-                    if (course.statusEnum != CoursePublishStatus.PUBLISHED)
-                      8.kH,
+                    8.kH,
                     _buildPublishStatusButton(context, course),
                     12.kH,
                     BeforeStartingCourseContent(
@@ -219,7 +278,9 @@ class ManageCourseDetailsSuccessContent extends StatelessWidget {
                 ),
               ),
               8.kH,
-              ManageCourseDetailsTabView(),
+              ManageCourseDetailsTabView(
+                courseId: courseId,
+              ),
             ],
           );
         }

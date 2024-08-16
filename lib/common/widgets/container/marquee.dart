@@ -6,11 +6,13 @@ class MarqueeListView extends StatefulWidget {
   final Widget? Function(BuildContext context, int index) itemBuilder;
   final int itemCount;
   final double height;
+  final int? animationSeconds;
   const MarqueeListView({
     super.key,
     required this.itemBuilder,
     required this.height,
     required this.itemCount,
+    this.animationSeconds,
   });
 
   @override
@@ -34,7 +36,7 @@ class _MarqueeListViewState extends State<MarqueeListView> {
     if (scrollController.hasClients && !isScrolling) {
       double minScrollExtent = scrollController.position.minScrollExtent;
       double maxScrollExtent = scrollController.position.maxScrollExtent;
-      animateToMaxMin(maxScrollExtent, minScrollExtent, maxScrollExtent, 25,
+      animateToMaxMin(maxScrollExtent, minScrollExtent, maxScrollExtent, widget.animationSeconds ?? 25,
           scrollController);
     } else {
       WidgetsBinding.instance.addPostFrameCallback((_) {

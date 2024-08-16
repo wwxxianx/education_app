@@ -23,7 +23,7 @@ class NotificationModel {
   final UserModel? actor;
   final String entityId;
   final String createdAt;
-  final Course? course;
+  final CourseSummary? course;
 
   NotificationType get notificationType => NotificationType.values.byName(type);
 
@@ -55,7 +55,7 @@ class NotificationModel {
     UserModel? actor,
     String? entityId,
     String? createdAt,
-    Course? course,
+    CourseSummary? course,
   }) {
     return NotificationModel(
       id: id ?? this.id,

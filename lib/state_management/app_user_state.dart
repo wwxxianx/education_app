@@ -1,5 +1,6 @@
 import 'package:education_app/data/network/api_result.dart';
 import 'package:education_app/domain/model/notification/notification.dart';
+import 'package:education_app/domain/model/user/course_progress.dart';
 import 'package:education_app/domain/model/user/user.dart';
 import 'package:education_app/domain/model/voucher/user_voucher.dart';
 import 'package:equatable/equatable.dart';
@@ -11,6 +12,7 @@ final class AppUserState extends Equatable {
   final ApiResult<List<UserVoucher>> vouchersResult;
   final List<NotificationModel> notifications;
   final NotificationModel? realtimeNotification;
+  final CourseProgress? recentCourseProgress;
 
   const AppUserState._({
     this.currentUser,
@@ -18,6 +20,7 @@ final class AppUserState extends Equatable {
     this.vouchersResult = const ApiResultInitial(),
     this.notifications = const [],
     this.realtimeNotification,
+    this.recentCourseProgress,
   });
 
   const AppUserState.initial() : this._();
@@ -41,6 +44,7 @@ final class AppUserState extends Equatable {
     ApiResult<List<UserVoucher>>? vouchersResult,
     List<NotificationModel>? notifications,
     NotificationModel? realtimeNotification,
+    CourseProgress? recentCourseProgress,
   }) {
     return AppUserState._(
       currentUser: currentUser ?? this.currentUser,
@@ -49,6 +53,7 @@ final class AppUserState extends Equatable {
       vouchersResult: vouchersResult ?? this.vouchersResult,
       notifications: notifications ?? this.notifications,
       realtimeNotification: realtimeNotification ?? this.realtimeNotification,
+      recentCourseProgress: recentCourseProgress ?? this.recentCourseProgress,
     );
   }
 
@@ -59,5 +64,6 @@ final class AppUserState extends Equatable {
         vouchersResult,
         notifications,
         realtimeNotification,
+        recentCourseProgress,
       ];
 }

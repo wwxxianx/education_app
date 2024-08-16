@@ -74,12 +74,14 @@ class CreateCourseBloc extends Bloc<CreateCourseEvent, CreateCourseState>
         final file = part.resourceFile!;
         return file;
       }).toList(),
-      price: state.priceText.isNotNullAndEmpty ? double.parse(state.priceText!) : null,
+      price: state.priceText.isNotNullAndEmpty
+          ? double.parse(state.priceText!)
+          : null,
     );
     final res = await _createCourse.call(payload);
     res.fold(
-      (failure) => emit(
-          state.copyWith(createCourseResult: ApiResultFailure(failure.errorMessage))),
+      (failure) => emit(state.copyWith(
+          createCourseResult: ApiResultFailure(failure.errorMessage))),
       (course) {
         emit(state.copyWith(createCourseResult: ApiResultSuccess(course)));
         event.onSuccess();
@@ -353,7 +355,7 @@ class CreateCourseBloc extends Bloc<CreateCourseEvent, CreateCourseState>
         state.sectionOneTitle == null || state.sectionOneTitle?.isEmpty == true
             ? const InputValidationResult.fail('Section title is required')
             : const InputValidationResult.success();
-    
+
     event.onSuccess();
   }
 

@@ -4,12 +4,16 @@ import 'package:education_app/data/local/shared_preference.dart';
 import 'package:education_app/data/network/api_result.dart';
 import 'package:education_app/data/network/payload/course/course_faq.dart';
 import 'package:education_app/data/network/payload/course/course_filters.dart';
+import 'package:education_app/data/network/payload/course/course_part_payload.dart';
 import 'package:education_app/data/network/payload/course/course_payload.dart';
+import 'package:education_app/data/network/payload/course/course_review_payload.dart';
+import 'package:education_app/data/network/payload/course/course_section_payload.dart';
 import 'package:education_app/data/network/payload/voucher/claim_voucher_payload.dart';
 import 'package:education_app/data/network/payload/voucher/voucher_payload.dart';
 import 'package:education_app/data/network/retrofit_api.dart';
 import 'package:education_app/domain/model/course/course.dart';
 import 'package:education_app/domain/model/course/course_faq.dart';
+import 'package:education_app/domain/model/course/user_review.dart';
 import 'package:education_app/domain/model/course_category/course_category.dart';
 import 'package:education_app/domain/model/voucher/user_voucher.dart';
 import 'package:education_app/domain/model/voucher/voucher.dart';
@@ -79,7 +83,7 @@ class CourseRepositoryImpl implements CourseRepository {
         subcategoryIds: payload.subcategoryIds,
         languageId: payload.languageId,
         sectionOneTitle: payload.sectionOneTitle,
-        price: payload.price,
+        price: payload.price != null ? payload.price! * 100 : null,
         courseImages: payload.courseImages,
         courseVideo: payload.courseVideo,
         courseResourceFiles: payload.courseResourceFiles,
@@ -208,6 +212,82 @@ class CourseRepositoryImpl implements CourseRepository {
       ClaimVoucherPayload payload) async {
     try {
       final res = await api.claimVoucher(payload);
+      return right(res);
+    } on Exception catch (e) {
+      if (e is DioException) {
+        return left(Failure(ErrorHandler.dioException(error: e).errorMessage));
+      }
+      return left(Failure(ErrorHandler.otherException(error: e).errorMessage));
+    }
+  }
+
+  @override
+  Future<Either<Failure, UserReview>> createCourseReview(
+      CourseReviewPayload payload) async {
+    try {
+      final res = await api.createCourseReview(paylaod: payload);
+      return right(res);
+    } on Exception catch (e) {
+      if (e is DioException) {
+        return left(Failure(ErrorHandler.dioException(error: e).errorMessage));
+      }
+      return left(Failure(ErrorHandler.otherException(error: e).errorMessage));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<UserReview>>> getCourseReviews(
+      String courseId) async {
+    try {
+      final res = await api.getCourseReviews(courseId: courseId);
+      return right(res);
+    } on Exception catch (e) {
+      if (e is DioException) {
+        return left(Failure(ErrorHandler.dioException(error: e).errorMessage));
+      }
+      return left(Failure(ErrorHandler.otherException(error: e).errorMessage));
+    }
+  }
+
+  @override
+  Future<Either<Failure, CourseSection>> updateCourseSection(
+      UpdateCourseSectionPayload payload) async {
+    try {
+      final res = await api.updateCourseSection(
+          sectionId: payload.sectionId, payload: payload);
+      return right(res);
+    } on Exception catch (e) {
+      if (e is DioException) {
+        return left(Failure(ErrorHandler.dioException(error: e).errorMessage));
+      }
+      return left(Failure(ErrorHandler.otherException(error: e).errorMessage));
+    }
+  }
+  
+  @override
+  Future<Either<Failure, CourseSection>> createCourseSection(CreateCourseSectionPayload payload) async {
+    try {
+      final res = await api.createCourseSection(
+          courseId: payload.courseId,
+          title: payload.title,
+          coursePartsTitle: payload.coursePartsTitle,
+          resourceFiles: payload.resourceFiles,);
+      return right(res);
+    } on Exception catch (e) {
+      if (e is DioException) {
+        return left(Failure(ErrorHandler.dioException(error: e).errorMessage));
+      }
+      return left(Failure(ErrorHandler.otherException(error: e).errorMessage));
+    }
+  }
+
+  @override
+  Future<Either<Failure, CoursePart>> createCoursePart(CreateCoursePartPayload payload) async {
+    try {
+      final res = await api.createCoursePart(
+          resourceFile: payload.resourceFile,
+          sectionId: payload.sectionId,
+          title: payload.title,);
       return right(res);
     } on Exception catch (e) {
       if (e is DioException) {

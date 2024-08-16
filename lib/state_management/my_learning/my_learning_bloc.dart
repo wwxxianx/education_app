@@ -24,7 +24,7 @@ class MyLearningBloc extends Bloc<MyLearningEvent, MyLearningState> {
 
   Future<void> _onFetchMyLearningCourses(
       OnFetchMyLearningCourses event, Emitter<MyLearningState> emit) async {
-    emit(state.copyWith(coursesResult: const ApiResultInitial()));
+    emit(state.copyWith(coursesResult: const ApiResultLoading()));
     final res = await _fetchLearningCourses.call(NoPayload());
     res.fold(
       (failure) => emit(state.copyWith(

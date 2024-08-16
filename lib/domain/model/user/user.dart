@@ -1,4 +1,5 @@
 import 'package:education_app/domain/model/user/instructor_profile.dart';
+import 'package:education_app/domain/model/user/user_preference.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'user.g.dart';
@@ -42,6 +43,7 @@ class UserModel {
   final String refreshToken;
   final InstructorProfile? instructorProfile;
   final UserBankAccount? bankAccount;
+  final UserPreference? preference;
   // UserPreference? preference;
   // List<CampaignDonation> campaignDonations;
   // List<Campaign> campaigns;
@@ -62,6 +64,7 @@ class UserModel {
     this.refreshToken = "",
     this.instructorProfile,
     this.bankAccount,
+    this.preference,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) =>
@@ -101,6 +104,7 @@ class UserModelWithAccessToken extends UserModel {
     required this.accessToken,
     InstructorProfile? instructorProfile,
     UserBankAccount? bankAccount,
+    UserPreference? preference,
   }) : super(
           id: id,
           fullName: fullName,
@@ -111,6 +115,7 @@ class UserModelWithAccessToken extends UserModel {
           refreshToken: refreshToken,
           instructorProfile: instructorProfile,
           bankAccount: bankAccount,
+          preference: preference,
         );
 
   UserModel toUserModel() {
@@ -124,6 +129,7 @@ class UserModelWithAccessToken extends UserModel {
       refreshToken: refreshToken,
       instructorProfile: instructorProfile,
       bankAccount: bankAccount,
+      preference: preference,
     );
   }
 

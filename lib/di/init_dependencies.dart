@@ -20,13 +20,18 @@ import 'package:education_app/domain/usecases/auth/sign_up.dart';
 import 'package:education_app/domain/usecases/constant/fetch_languages.dart';
 import 'package:education_app/domain/usecases/course/craete_course_voucher.dart';
 import 'package:education_app/domain/usecases/course/create_course.dart';
+import 'package:education_app/domain/usecases/course/create_course_part.dart';
+import 'package:education_app/domain/usecases/course/create_course_review.dart';
+import 'package:education_app/domain/usecases/course/create_course_section.dart';
 import 'package:education_app/domain/usecases/course/fetch_course_faq.dart';
 import 'package:education_app/domain/usecases/course/fetch_course_levels.dart';
+import 'package:education_app/domain/usecases/course/fetch_course_reviews.dart';
 import 'package:education_app/domain/usecases/course/fetch_course_vouchers.dart';
 import 'package:education_app/domain/usecases/course/fetch_courses.dart';
 import 'package:education_app/domain/usecases/course/fetch_course.dart';
 import 'package:education_app/domain/usecases/course/update_course.dart';
 import 'package:education_app/domain/usecases/course/update_course_faq.dart';
+import 'package:education_app/domain/usecases/course/update_course_section.dart';
 import 'package:education_app/domain/usecases/course_category/fetch_all_course_categories.dart';
 import 'package:education_app/domain/usecases/notification/fetch_notifications.dart';
 import 'package:education_app/domain/usecases/notification/read_notification.dart';
@@ -39,11 +44,16 @@ import 'package:education_app/domain/usecases/user/fetch_favourite_courses.dart'
 import 'package:education_app/domain/usecases/user/fetch_instructor_profile.dart';
 import 'package:education_app/domain/usecases/user/fetch_learning_courses.dart';
 import 'package:education_app/domain/usecases/user/fetch_my_vouchers.dart';
+import 'package:education_app/domain/usecases/user/fetch_preference_recommended_course%20copy.dart';
+import 'package:education_app/domain/usecases/user/fetch_purchase_recommended_course.dart';
+import 'package:education_app/domain/usecases/user/fetch_recent_course_progress.dart';
 import 'package:education_app/domain/usecases/user/update_favourite_course.dart';
+import 'package:education_app/domain/usecases/user/update_recent_course_progress.dart';
 import 'package:education_app/domain/usecases/user/update_user_profile.dart';
 import 'package:education_app/state_management/app_user_cubit.dart';
 import 'package:education_app/domain/usecases/user/fetch_learning_course.dart';
 import 'package:education_app/state_management/explore/explore_bloc.dart';
+import 'package:education_app/state_management/search/search_course_bloc.dart';
 import 'package:education_app/state_management/user_favourite_course/user_favourite_course_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -87,6 +97,7 @@ void _initCore() {
           toggleReadNotification: serviceLocator(),
           supabase: serviceLocator(),
           signOut: serviceLocator(),
+          fetchRecentCourseProgress: serviceLocator(),
         ))
     ..registerLazySingleton(() => DioNetwork.provideDio())
     ..registerLazySingleton(() => MySharedPreference())
@@ -136,7 +147,15 @@ void _initUserAndAuth() {
     ..registerLazySingleton(
         () => FetchNotifications(userRepository: serviceLocator()))
     ..registerLazySingleton(
-        () => ToggleReadNotification(userRepository: serviceLocator()));
+        () => ToggleReadNotification(userRepository: serviceLocator()))
+    ..registerLazySingleton(
+        () => FetchRecentCourseProgress(userRepository: serviceLocator()))
+    ..registerLazySingleton(
+        () => UpdateRecentCourseProgress(userRepository: serviceLocator()))
+    ..registerLazySingleton(
+        () => FetchPurchaseRecommendedCourse(userRepository: serviceLocator()))
+    ..registerLazySingleton(
+        () => FetchPreferenceRecommendedCourse(userRepository: serviceLocator()));
 }
 
 void _initConstant() {
@@ -160,7 +179,14 @@ void _initCourse() {
           api: serviceLocator(),
         ))
     // Bloc
-    ..registerLazySingleton(() => ExploreBloc(fetchCourses: serviceLocator()))
+    ..registerLazySingleton(() => ExploreBloc(
+          fetchCourses: serviceLocator(),
+          fetchPreferenceRecommendedCourse: serviceLocator(),
+          fetchPurchaseRecommendedCourse: serviceLocator(),
+        ))
+    ..registerLazySingleton(() => SearchCourseBloc(
+          fetchCourses: serviceLocator(),
+        ))
     // Usecases
     ..registerFactory(
         () => FetchAllCourseCategories(courseRepository: serviceLocator()))
@@ -174,6 +200,11 @@ void _initCourse() {
         () => FetchCourseVouchers(courseRepository: serviceLocator()))
     ..registerFactory(
         () => CreateCourseVoucher(courseRepository: serviceLocator()))
+    ..registerFactory(() => ClaimVoucher(courseRepository: serviceLocator()))
     ..registerFactory(
-        () => ClaimVoucher(courseRepository: serviceLocator()));
+        () => FetchCourseReviews(courseRepository: serviceLocator()))
+    ..registerFactory(() => CreateCourseReview(courseRepository: serviceLocator()))
+    ..registerFactory(() => UpdateCourseSection(courseRepository: serviceLocator()))
+    ..registerFactory(() => CreateCoursePart(courseRepository: serviceLocator()))
+    ..registerFactory(() => CreateCourseSection(courseRepository: serviceLocator()));
 }

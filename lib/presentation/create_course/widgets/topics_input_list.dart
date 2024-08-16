@@ -16,7 +16,7 @@ class InputListTileItem {
 }
 
 class ReorderableInputList extends StatefulWidget {
-  final void Function(List<InputListTileItem>) onFinished;
+  final void Function(List<InputListTileItem> inputItems) onFinished;
   final List<InputListTileItem> Function() onInit;
   const ReorderableInputList({
     super.key,

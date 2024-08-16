@@ -39,6 +39,6 @@ class CreateVoucherPayload {
   }
 
   CreateVoucherPayload formatCurrency() {
-    return copyWith(afterDiscountValue: afterDiscountValue * 100);
+    return copyWith(afterDiscountValue: afterDiscountValue * 100, );
   }
 }

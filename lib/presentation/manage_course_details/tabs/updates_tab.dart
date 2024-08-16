@@ -12,7 +12,7 @@ class ManageCourseUpdatesTabContent extends StatelessWidget {
     return BlocBuilder<ManageCourseDetailsBloc, ManageCourseDetailsState>(
       builder: (context, state) {
         final courseResult = state.courseResult;
-
+        
         return Padding(
           padding: const EdgeInsets.symmetric(
             horizontal: Dimensions.screenHorizontalPadding,

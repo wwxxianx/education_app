@@ -5,6 +5,7 @@ import 'package:education_app/common/utils/extensions/sized_box_extension.dart';
 import 'package:education_app/common/utils/extensions/string.dart';
 import 'package:education_app/common/widgets/avatar/avatar.dart';
 import 'package:education_app/common/widgets/course/course_card.dart';
+import 'package:education_app/common/widgets/empty_illustration.dart';
 import 'package:education_app/data/network/api_result.dart';
 import 'package:education_app/domain/model/course/course.dart';
 import 'package:education_app/domain/model/course/user_review.dart';
@@ -18,6 +19,9 @@ class ManageCourseReviewsTabContent extends StatelessWidget {
 
   Widget _buildUserReviews(ApiResult<Course> courseResult) {
     if (courseResult is ApiResultSuccess<Course>) {
+      if (courseResult.data.reviews.isEmpty) {
+        return const EmptyIllustration(title: "No reviews",);
+      }
       return ListView.builder(
         physics: const NeverScrollableScrollPhysics(),
         shrinkWrap: true,

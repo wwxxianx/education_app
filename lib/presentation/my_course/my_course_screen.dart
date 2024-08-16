@@ -1,6 +1,7 @@
 import 'package:education_app/common/theme/color.dart';
 import 'package:education_app/common/theme/typography.dart';
 import 'package:education_app/common/widgets/course/course_list_tile.dart';
+import 'package:education_app/common/widgets/empty_illustration.dart';
 import 'package:education_app/data/network/api_result.dart';
 import 'package:education_app/di/init_dependencies.dart';
 import 'package:education_app/domain/model/course/course.dart';
@@ -74,7 +75,7 @@ class MyCoursesList extends StatelessWidget {
         final myCoursesResult = state.myCoursesResult;
         if (myCoursesResult is ApiResultSuccess<List<Course>>) {
           if (myCoursesResult.data.isEmpty) {
-            return Text("Empty");
+            return const EmptyIllustration(title: "You don't have any course created",);
           }
           return ListView.builder(
             shrinkWrap: true,
@@ -92,12 +93,12 @@ class MyCoursesList extends StatelessWidget {
           );
         }
         if (myCoursesResult is ApiResultLoading) {
-          return Text("Loading...");
+          return const Center(child: CircularProgressIndicator(),);
         }
         if (myCoursesResult is ApiResultFailure) {
-          return Text("Failure...");
+          return const Center(child: CircularProgressIndicator(),);
         }
-        return Container();
+        return const Center(child: CircularProgressIndicator(),);
       },
     );
   }

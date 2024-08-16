@@ -21,7 +21,7 @@ NotificationModel _$NotificationModelFromJson(Map<String, dynamic> json) =>
       createdAt: json['createdAt'] as String,
       course: json['course'] == null
           ? null
-          : Course.fromJson(json['course'] as Map<String, dynamic>),
+          : CourseSummary.fromJson(json['course'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$NotificationModelToJson(NotificationModel instance) =>

@@ -7,6 +7,7 @@ import 'package:education_app/common/widgets/dropdown_menu/level_dropdown_menu.d
 import 'package:education_app/di/init_dependencies.dart';
 import 'package:education_app/state_management/app_user_cubit.dart';
 import 'package:education_app/state_management/explore/explore_bloc.dart';
+import 'package:education_app/state_management/search/search_course_bloc.dart';
 import 'package:education_app/state_management/user_favourite_course/user_favourite_course_bloc.dart';
 import 'package:education_app/state_management/user_favourite_course/user_favourite_course_event.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +29,7 @@ void main() async {
         BlocProvider(create: (_) => serviceLocator<CourseCategoriesCubit>()..fetchCourseCategories()),
         BlocProvider(create: (_) => serviceLocator<CourseLevelCubit>()..fetchCourseLevels()),
         BlocProvider(create: (_) => serviceLocator<UserFavouriteCourseBloc>()..add(OnFetchUserFavouriteCourses())),
+        BlocProvider(create: (_) => serviceLocator<SearchCourseBloc>()),
         // BlocProvider(create: (_) => serviceLocator<SignUpBloc>()),
         // BlocProvider(
         //     create: (_) =>

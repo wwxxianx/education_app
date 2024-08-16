@@ -9,11 +9,13 @@ import 'package:education_app/di/init_dependencies.dart';
 import 'package:education_app/domain/model/course/course.dart';
 import 'package:education_app/presentation/purchase/widgets/available_voucher_list.dart';
 import 'package:education_app/presentation/purchase/widgets/master_card_payment_method.dart';
+import 'package:education_app/presentation/redirects/purchase_course_success_redirect_screen.dart';
 import 'package:education_app/state_management/purchase/purchase_bloc.dart';
 import 'package:education_app/state_management/purchase/purchase_event.dart';
 import 'package:education_app/state_management/purchase/purchase_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:toastification/toastification.dart';
 
@@ -29,6 +31,7 @@ class PurchaseScreen extends StatelessWidget {
           OnPurchaseCourse(
             courseId: courseId,
             onSuccess: () {
+              context.go(PurchaseCourseSuccessRedirectScreen.route);
               toastification.show(
                 type: ToastificationType.success,
                 title: Text("Purchased!!"),

@@ -1,5 +1,6 @@
 import 'package:education_app/data/network/api_result.dart';
 import 'package:education_app/data/network/payload/course/course_filters.dart';
+import 'package:education_app/domain/model/course/enum/course_enum.dart';
 import 'package:education_app/domain/usecases/course/fetch_courses.dart';
 import 'package:education_app/state_management/search/search_course_event.dart';
 import 'package:education_app/state_management/search/search_course_state.dart';
@@ -123,10 +124,7 @@ class SearchCourseBloc extends Bloc<SearchCourseEvent, SearchCourseState> {
         ),
       );
     } else {
-      final updatedCategories = [
-        ...state.selectedCategories,
-        event.category
-      ];
+      final updatedCategories = [...state.selectedCategories, event.category];
       emit(
         state.copyWith(
           selectedCategories: updatedCategories,
@@ -146,6 +144,7 @@ class SearchCourseBloc extends Bloc<SearchCourseEvent, SearchCourseState> {
       languageIds: state.selectedLanguageIds,
       levelIds: state.selectedLevelIds,
       subcategoryIds: state.selectedSubcategoryIds,
+      status: CoursePublishStatus.PUBLISHED,
     );
     final res = await _fetchCourses.call(filters);
     res.fold(

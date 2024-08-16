@@ -7,11 +7,22 @@ import 'package:education_app/common/widgets/course/course_category_toggle_list.
 import 'package:education_app/data/network/api_result.dart';
 import 'package:education_app/di/init_dependencies.dart';
 import 'package:education_app/domain/model/course_category/course_category.dart';
+import 'package:education_app/presentation/search/search_screen.dart';
+import 'package:education_app/state_management/search/search_course_bloc.dart';
+import 'package:education_app/state_management/search/search_course_event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 class PopularCategories extends StatelessWidget {
   const PopularCategories({super.key});
+
+  void _handleCategoryPressed(BuildContext context, CourseCategory category) {
+    context
+        .read<SearchCourseBloc>()
+        .add(OnSelectCourseCategory(category: category));
+    context.push(SearchScreen.route);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +48,7 @@ class PopularCategories extends StatelessWidget {
               12.kH,
               if (categoriesResult is ApiResultSuccess<List<CourseCategory>>)
                 MarqueeListView(
+                  animationSeconds: 6,
                   height: 44,
                   itemCount: 3,
                   itemBuilder: (context, index) {
@@ -49,7 +61,9 @@ class PopularCategories extends StatelessWidget {
                       ),
                       child: CustomToggleButton(
                         isSelected: true,
-                        onTap: () {},
+                        onTap: () {
+                          _handleCategoryPressed(context, category);
+                        },
                         child: Row(
                           children: [
                             category.getIcon(),
@@ -67,6 +81,7 @@ class PopularCategories extends StatelessWidget {
               12.kH,
               if (categoriesResult is ApiResultSuccess<List<CourseCategory>>)
                 MarqueeListView(
+                  animationSeconds: 10,
                   height: 44,
                   itemCount: 3,
                   itemBuilder: (context, index) {
@@ -79,7 +94,9 @@ class PopularCategories extends StatelessWidget {
                       ),
                       child: CustomToggleButton(
                         isSelected: true,
-                        onTap: () {},
+                        onTap: () {
+                          _handleCategoryPressed(context, category);
+                        },
                         child: Row(
                           children: [
                             category.getIcon(),

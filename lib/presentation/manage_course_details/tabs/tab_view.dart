@@ -1,3 +1,4 @@
+import 'package:education_app/presentation/course_details/tabs/reviews_tab.dart';
 import 'package:education_app/presentation/manage_course_details/tabs/about_tab.dart';
 import 'package:education_app/presentation/manage_course_details/tabs/curriculum_tab.dart';
 import 'package:education_app/presentation/manage_course_details/tabs/reviews_tab.dart';
@@ -9,12 +10,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ManageCourseDetailsTabView extends StatefulWidget {
+  final String courseId;
   const ManageCourseDetailsTabView({
     super.key,
+    required this.courseId,
   });
 
   @override
-  State<ManageCourseDetailsTabView> createState() => _ManageCourseDetailsTabViewState();
+  State<ManageCourseDetailsTabView> createState() =>
+      _ManageCourseDetailsTabViewState();
 }
 
 class _ManageCourseDetailsTabViewState extends State<ManageCourseDetailsTabView>
@@ -67,11 +71,15 @@ class _ManageCourseDetailsTabViewState extends State<ManageCourseDetailsTabView>
     final courseResult = state.courseResult;
     switch (index) {
       case 0:
-        return ManageCourseAboutTabContent();
+        return ManageCourseAboutTabContent(
+          courseId: widget.courseId,
+        );
       case 1:
         return const ManageCourseCurriculumTabContent();
       case 2:
-        return ManageCourseReviewsTabContent();
+        return CourseReviewsTabContent(
+          courseId: widget.courseId,
+        );
       case 3:
         return ManageCourseUpdatesTabContent();
       default:

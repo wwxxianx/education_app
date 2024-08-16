@@ -6,6 +6,7 @@ class UserProfilePayload {
   final bool? isOnBoardingCompleted;
   final String? phoneNumber;
   final String? onesignalId;
+  final List<String>? favouriteCourseCategoryIds;
 
   UserProfilePayload({
     this.profileImageFile,
@@ -15,5 +16,6 @@ class UserProfilePayload {
     this.isOnBoardingCompleted = true,
     this.phoneNumber,
     this.onesignalId,
+    this.favouriteCourseCategoryIds = const [],
   });
 }

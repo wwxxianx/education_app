@@ -37,6 +37,7 @@ CoursePart _$CoursePartFromJson(Map<String, dynamic> json) => CoursePart(
       title: json['title'] as String,
       resource:
           CourseResource.fromJson(json['resource'] as Map<String, dynamic>),
+      courseSectionId: json['courseSectionId'] as String,
     );
 
 Map<String, dynamic> _$CoursePartToJson(CoursePart instance) =>
@@ -45,6 +46,7 @@ Map<String, dynamic> _$CoursePartToJson(CoursePart instance) =>
       'order': instance.order,
       'title': instance.title,
       'resource': instance.resource,
+      'courseSectionId': instance.courseSectionId,
     };
 
 CourseSection _$CourseSectionFromJson(Map<String, dynamic> json) =>
@@ -52,9 +54,10 @@ CourseSection _$CourseSectionFromJson(Map<String, dynamic> json) =>
       id: json['id'] as String,
       order: (json['order'] as num).toInt(),
       title: json['title'] as String,
-      parts: (json['parts'] as List<dynamic>)
-          .map((e) => CoursePart.fromJson(e as Map<String, dynamic>))
-          .toList(),
+      parts: (json['parts'] as List<dynamic>?)
+              ?.map((e) => CoursePart.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
     );
 
 Map<String, dynamic> _$CourseSectionToJson(CourseSection instance) =>
@@ -74,7 +77,7 @@ Course _$CourseFromJson(Map<String, dynamic> json) => Course(
           UserModel.fromJson(json['instructor'] as Map<String, dynamic>),
       status: json['status'] as String,
       thumbnailUrl: json['thumbnailUrl'] as String?,
-      reviewRating: (json['reviewRating'] as num?)?.toDouble(),
+      reviewRating: (json['reviewRating'] as num).toDouble(),
       category:
           CourseCategory.fromJson(json['category'] as Map<String, dynamic>),
       subcategories: (json['subcategories'] as List<dynamic>?)
@@ -144,4 +147,28 @@ Map<String, dynamic> _$CourseUpdateToJson(CourseUpdate instance) =>
       'id': instance.id,
       'updateOverview': instance.updateOverview,
       'createdAt': instance.createdAt,
+    };
+
+CourseSummary _$CourseSummaryFromJson(Map<String, dynamic> json) =>
+    CourseSummary(
+      id: json['id'] as String,
+      title: json['title'] as String,
+      description: json['description'] as String,
+      thumbnailUrl: json['thumbnailUrl'] as String?,
+      price: (json['price'] as num).toInt(),
+      createdAt: json['createdAt'] as String,
+      updatedAt: json['updatedAt'] as String,
+      videoUrl: json['videoUrl'] as String?,
+    );
+
+Map<String, dynamic> _$CourseSummaryToJson(CourseSummary instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'title': instance.title,
+      'description': instance.description,
+      'thumbnailUrl': instance.thumbnailUrl,
+      'price': instance.price,
+      'createdAt': instance.createdAt,
+      'updatedAt': instance.updatedAt,
+      'videoUrl': instance.videoUrl,
     };

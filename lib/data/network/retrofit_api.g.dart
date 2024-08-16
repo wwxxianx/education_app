@@ -14,7 +14,7 @@ class _RestClient implements RestClient {
     this.baseUrl,
   }) {
     baseUrl ??=
-        'https://a592-2001-f40-987-516-4dcf-c1d2-d719-a33e.ngrok-free.app/';
+        'https://5143-2001-f40-987-516-81c-1383-547d-49cf.ngrok-free.app/';
   }
 
   final Dio _dio;
@@ -109,6 +109,7 @@ class _RestClient implements RestClient {
     String? fullName,
     File? profileImageFile,
     bool? isOnboardingCompleted,
+    List<String>? preferenceCourseCategoryIds,
   }) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -136,6 +137,9 @@ class _RestClient implements RestClient {
         isOnboardingCompleted.toString(),
       ));
     }
+    preferenceCourseCategoryIds?.forEach((i) {
+      _data.fields.add(MapEntry('preferenceCourseCategoryIds', i));
+    });
     final _result = await _dio
         .fetch<Map<String, dynamic>>(_setStreamType<UserModel>(Options(
       method: 'PATCH',
@@ -155,6 +159,63 @@ class _RestClient implements RestClient {
               baseUrl,
             ))));
     final value = UserModel.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<List<Course>> findRecommendedCourseFromPreference() async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final Map<String, dynamic>? _data = null;
+    final _result =
+        await _dio.fetch<List<dynamic>>(_setStreamType<List<Course>>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              'users/recommended-course/preference',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
+    var value = _result.data!
+        .map((dynamic i) => Course.fromJson(i as Map<String, dynamic>))
+        .toList();
+    return value;
+  }
+
+  @override
+  Future<RecommendedCourseFromPurchaseHistory>
+      findRecommendedCourseFromPurchaseHistory() async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final Map<String, dynamic>? _data = null;
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<RecommendedCourseFromPurchaseHistory>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              'users/recommended-course/purchase',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
+    final value = RecommendedCourseFromPurchaseHistory.fromJson(_result.data!);
     return value;
   }
 
@@ -516,7 +577,7 @@ class _RestClient implements RestClient {
       _data.fields.add(MapEntry('subcategoryIds', i));
     });
     _data.fields.add(MapEntry(
-      'languageIds',
+      'languageId',
       languageId,
     ));
     _data.fields.add(MapEntry(
@@ -1048,6 +1109,252 @@ class _RestClient implements RestClient {
               baseUrl,
             ))));
     final value = NotificationModel.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<CourseProgress> updateCourseProgress(
+      {required CourseProgressPayload payload}) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(payload.toJson());
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<CourseProgress>(Options(
+      method: 'PATCH',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              'users/progress',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
+    final value = CourseProgress.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<CourseProgress> getRecentCourseProgress() async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final Map<String, dynamic>? _data = null;
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<CourseProgress>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              'users/progress',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
+    final value = CourseProgress.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<List<UserReview>> getCourseReviews({
+    required String courseId,
+    int? limit,
+  }) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'limit': limit};
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
+    final Map<String, dynamic>? _data = null;
+    final _result = await _dio
+        .fetch<List<dynamic>>(_setStreamType<List<UserReview>>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              'course-reviews/course/${courseId}',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
+    var value = _result.data!
+        .map((dynamic i) => UserReview.fromJson(i as Map<String, dynamic>))
+        .toList();
+    return value;
+  }
+
+  @override
+  Future<UserReview> createCourseReview(
+      {required CourseReviewPayload paylaod}) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(paylaod.toJson());
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<UserReview>(Options(
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              'course-reviews',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
+    final value = UserReview.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<CourseSection> updateCourseSection({
+    required String sectionId,
+    required UpdateCourseSectionPayload payload,
+  }) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(payload.toJson());
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<CourseSection>(Options(
+      method: 'PATCH',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              'courses/sections/${sectionId}',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
+    final value = CourseSection.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<CourseSection> createCourseSection({
+    required String courseId,
+    required String title,
+    List<String> coursePartsTitle = const [],
+    List<File> resourceFiles = const [],
+  }) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = FormData();
+    _data.fields.add(MapEntry(
+      'courseId',
+      courseId,
+    ));
+    _data.fields.add(MapEntry(
+      'title',
+      title,
+    ));
+    coursePartsTitle.forEach((i) {
+      _data.fields.add(MapEntry('coursePartsTitle', i));
+    });
+    _data.files.addAll(resourceFiles.map((i) => MapEntry(
+        'resourceFiles',
+        MultipartFile.fromFileSync(
+          i.path,
+          filename: i.path.split(Platform.pathSeparator).last,
+        ))));
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<CourseSection>(Options(
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+      contentType: 'multipart/form-data',
+    )
+            .compose(
+              _dio.options,
+              'courses/sections',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
+    final value = CourseSection.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<CoursePart> createCoursePart({
+    required String sectionId,
+    required String title,
+    required File resourceFile,
+  }) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = FormData();
+    _data.fields.add(MapEntry(
+      'sectionId',
+      sectionId,
+    ));
+    _data.fields.add(MapEntry(
+      'title',
+      title,
+    ));
+    _data.files.add(MapEntry(
+      'resourceFile',
+      MultipartFile.fromFileSync(
+        resourceFile.path,
+        filename: resourceFile.path.split(Platform.pathSeparator).last,
+      ),
+    ));
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<CoursePart>(Options(
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+      contentType: 'multipart/form-data',
+    )
+            .compose(
+              _dio.options,
+              'courses/parts',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
+    final value = CoursePart.fromJson(_result.data!);
     return value;
   }
 

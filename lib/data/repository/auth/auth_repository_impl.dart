@@ -28,6 +28,7 @@ class AuthRepositoryImpl implements AuthRepository {
     sp.clearData(Constants.sharedPreferencesKey.user);
     sp.clearData(Constants.sharedPreferencesKey.accessToken);
     sp.clearData(Constants.sharedPreferencesKey.refreshToken);
+    sp.clearData(Constants.sharedPreferencesKey.courseProgress);
   }
 
   @override

@@ -35,7 +35,5 @@ class MyCourseBloc extends Bloc<MyCourseEvent, MyCourseState> {
         emit(state.copyWith(myCoursesResult: ApiResultSuccess(courses)));
       },
     );
-    // emit(state.copyWith(myCoursesResult: ApiResultSuccess(Course.samples)));
-    // emit(state.copyWith(myCoursesResult: await event.onSuccess()));
   }
 }

@@ -1,5 +1,7 @@
 import 'package:education_app/di/init_dependencies.dart';
+import 'package:education_app/domain/model/course/course.dart';
 import 'package:education_app/presentation/my_learning_details/tabs/curriculum_tab_content.dart';
+import 'package:education_app/presentation/my_learning_details/tabs/more_tab_content.dart';
 import 'package:education_app/presentation/my_learning_details/widgets/my_learning_details_app_bar.dart';
 import 'package:education_app/state_management/my_learning_details/my_learning_details_bloc.dart';
 import 'package:education_app/state_management/my_learning_details/my_learning_details_event.dart';
@@ -8,9 +10,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class MyLearningDetailsScreen extends StatefulWidget {
   final String courseId;
+  final CoursePart? progressCoursePart;
   const MyLearningDetailsScreen({
     super.key,
     required this.courseId,
+    required this.progressCoursePart
   });
 
   @override
@@ -26,6 +30,7 @@ class _MyLearningDetailsScreenState extends State<MyLearningDetailsScreen>
   void initState() {
     super.initState();
     _scrollController = ScrollController();
+    
   }
 
   @override
@@ -34,8 +39,10 @@ class _MyLearningDetailsScreenState extends State<MyLearningDetailsScreen>
       providers: [
         BlocProvider(
           create: (context) {
-            return MyLearningDetailsBloc(fetchCourse: serviceLocator())
-              ..add(OnFetchCourse(courseId: widget.courseId));
+            return MyLearningDetailsBloc(
+              fetchCourse: serviceLocator(),
+              updateRecentCourseProgress: serviceLocator(),
+            )..add(OnFetchCourse(courseId: widget.courseId, progressCoursePart: widget.progressCoursePart));
           },
         )
       ],
@@ -68,8 +75,12 @@ class _MyLearningDetailsScreenState extends State<MyLearningDetailsScreen>
               },
               body: TabBarView(
                 children: [
-                  LearningDetailsCurriculumTabContent(),
-                  Text("More"),
+                  LearningDetailsCurriculumTabContent(
+                    courseId: widget.courseId,
+                  ),
+                  MyLearningDetailsMoreTabContent(
+                    courseId: widget.courseId,
+                  ),
                 ],
               ),
             ),

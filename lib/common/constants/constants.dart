@@ -1,8 +1,7 @@
 class Constants {
   Constants._();
   static const sharedPreferencesKey = SharedPreferencesKey();
-  static const apiUrl =
-      "https://a592-2001-f40-987-516-4dcf-c1d2-d719-a33e.ngrok-free.app/";
+  static const apiUrl = "https://5143-2001-f40-987-516-81c-1383-547d-49cf.ngrok-free.app/";
 
   static const stripePublishableKey =
       "pk_test_51OmSFdIGtvkAiXyxrpvC4ohbIbN4COdgvxZlihCNKSE0j0AR8gg4hXvYcj9MQKUxSS4J7LjMGHUDTA5fG2ynSFQs00EODoklrH";
@@ -23,4 +22,7 @@ class SharedPreferencesKey {
   final String stateAndRegionExpiration = "stateAndRegionExpiration";
   final String courseCategories = "courseCategories";
   final String courseCategoriesExpiration = "campaignCategoriesExpiration";
+
+  // Course progress
+  final String courseProgress = "courseProgress";
 }

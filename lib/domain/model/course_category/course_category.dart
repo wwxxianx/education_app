@@ -1,3 +1,4 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -5,7 +6,7 @@ import 'package:json_annotation/json_annotation.dart';
 part 'course_category.g.dart';
 
 @JsonSerializable()
-class CourseCategory {
+class CourseCategory extends Equatable {
   final String id;
   final String title;
   final List<CourseCategory> subcategories;
@@ -62,6 +63,9 @@ class CourseCategory {
       title: 'Financing & Accounting',
     ),
   ];
+  
+  @override
+  List<Object?> get props => [id, title, subcategories];
 }
 
 extension CourseCategoryExtension on CourseCategory {

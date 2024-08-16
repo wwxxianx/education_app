@@ -19,6 +19,7 @@ import 'package:education_app/state_management/user_profile/user_profile_state.d
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logger/logger.dart';
 
 class EditAccountBottomSheet extends StatefulWidget {
   const EditAccountBottomSheet({super.key});
@@ -62,6 +63,8 @@ class _EditAccountBottomSheetState extends State<EditAccountBottomSheet> {
     final appUserCubit = context.read<AppUserCubit>();
     final fullName = fullNameController.text;
     final phoneNumber = phoneNumberController.text;
+    var logger = Logger();
+    logger.e('selected file: ${selectedImageFile}');
     final payload = UserProfilePayload(
       fullName: fullName,
       phoneNumber: phoneNumber,

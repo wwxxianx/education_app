@@ -17,7 +17,7 @@ class DioNetwork {
   }
 }
 
-// Interceptor for jwt refresh
+// Interceptor for jwt
 class NetworkInterceptorJWT extends Interceptor {
   final Dio dio;
 
@@ -44,8 +44,8 @@ class NetworkInterceptorJWT extends Interceptor {
           sp.getString(Constants.sharedPreferencesKey.refreshToken);
 
       // NOTE:
-      // Use HTTP package as the Dio onRequest method is override to use accessToken
-      // everytime, so the refreshToken will be overwritten everytime.
+      // Use HTTP package, since the Dio onRequest method is override to use accessToken
+      // everytime, so the refreshToken will be replaced everytime.
       final tokenRes = await http.post(
         Uri.parse('${Constants.apiUrl}auth/refresh'),
         headers: {

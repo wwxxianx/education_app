@@ -2,6 +2,7 @@ import 'package:education_app/data/network/api_result.dart';
 import 'package:education_app/domain/model/course/course.dart';
 import 'package:education_app/domain/model/course/course_faq.dart';
 import 'package:education_app/domain/model/voucher/voucher.dart';
+import 'package:education_app/state_management/create_course/create_course_state.dart';
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -53,7 +54,25 @@ final class ManageCourseDetailsState extends Equatable {
   final String? voucherStockText;
   final DateTime? voucherExpirationDate;
 
+  // Relations
+  final String? selectedCategoryId;
+  final List<String> selectedSubcategoryIds;
+  final String? categoryError;
+  final String? subcategoryError;
+  // Details
+  final String? titleText;
+  final String? titleError;
+  final String? selectedLevelId;
+  final String? levelError;
+  // Price
+  final String? priceText;
+
   final ApiResult<Course> updateCourseResult;
+  final ApiResult<CourseSection> submitCourseSectionResult;
+  final ApiResult<CoursePart> submitCoursePartResult;
+  
+  final String? sectionOneTitle;
+  final List<CoursePartField> partFields;
 
   const ManageCourseDetailsState._({
     this.currentTabIndex = 0,
@@ -68,6 +87,19 @@ final class ManageCourseDetailsState extends Equatable {
     this.voucherTitleText,
     this.voucherStockText,
     this.voucherExpirationDate,
+    this.selectedCategoryId,
+    this.selectedSubcategoryIds = const [],
+    this.categoryError,
+    this.subcategoryError,
+    this.titleText,
+    this.titleError,
+    this.selectedLevelId,
+    this.levelError,
+    this.priceText,
+    this.submitCourseSectionResult = const ApiResultInitial(),
+    this.submitCoursePartResult = const ApiResultInitial(),
+    this.sectionOneTitle,
+    this.partFields = const [CoursePartField()],
   });
 
   const ManageCourseDetailsState.initial()
@@ -88,7 +120,20 @@ final class ManageCourseDetailsState extends Equatable {
     String? discountText,
     String? titleText,
     String? voucherStockText,
+    String? voucherTitleText,
     DateTime? voucherExpirationDate,
+    String? selectedCategoryId,
+    List<String>? selectedSubcategoryIds,
+    String? categoryError,
+    String? subcategoryError,
+    String? titleError,
+    String? selectedLevelId,
+    String? levelError,
+    String? priceText,
+    ApiResult<CourseSection>? submitCourseSectionResult,
+    ApiResult<CoursePart>? submitCoursePartResult,
+    String? sectionOneTitle,
+    List<CoursePartField>? partFields,
   }) {
     return ManageCourseDetailsState._(
       currentTabIndex: currentTabIndex ?? this.currentTabIndex,
@@ -101,10 +146,26 @@ final class ManageCourseDetailsState extends Equatable {
       courseVoucherResult: courseVoucherResult ?? this.courseVoucherResult,
       createVoucherResult: createVoucherResult ?? this.createVoucherResult,
       discountText: discountText ?? this.discountText,
-      voucherTitleText: titleText ?? this.voucherTitleText,
+      voucherTitleText: voucherTitleText ?? this.voucherTitleText,
       voucherStockText: voucherStockText ?? this.voucherStockText,
       voucherExpirationDate:
           voucherExpirationDate ?? this.voucherExpirationDate,
+      selectedCategoryId: selectedCategoryId ?? this.selectedCategoryId,
+      selectedSubcategoryIds:
+          selectedSubcategoryIds ?? this.selectedSubcategoryIds,
+      categoryError: categoryError,
+      subcategoryError: subcategoryError,
+      titleText: titleText ?? this.titleText,
+      titleError: titleError,
+      selectedLevelId: selectedLevelId ?? this.selectedLevelId,
+      levelError: levelError,
+      priceText: priceText ?? this.priceText,
+      submitCourseSectionResult:
+          submitCourseSectionResult ?? this.submitCourseSectionResult,
+      submitCoursePartResult:
+          submitCoursePartResult ?? this.submitCoursePartResult,
+      sectionOneTitle: sectionOneTitle ?? this.sectionOneTitle,
+      partFields: partFields ?? this.partFields,
     );
   }
 
@@ -122,5 +183,18 @@ final class ManageCourseDetailsState extends Equatable {
         voucherTitleText,
         voucherStockText,
         voucherExpirationDate,
+        selectedCategoryId,
+        selectedSubcategoryIds,
+        categoryError,
+        subcategoryError,
+        titleText,
+        titleError,
+        selectedLevelId,
+        levelError,
+        priceText,
+        submitCourseSectionResult,
+        submitCoursePartResult,
+        sectionOneTitle,
+        partFields,
       ];
 }

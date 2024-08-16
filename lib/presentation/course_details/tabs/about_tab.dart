@@ -12,8 +12,31 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:heroicons/heroicons.dart';
 
-class CourseAboutTabContent extends StatelessWidget {
-  const CourseAboutTabContent({super.key});
+class CourseDetailsAboutTab extends StatelessWidget {
+  const CourseDetailsAboutTab({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<CourseDetailsBloc, CourseDetailsState>(
+      builder: (context, state) {
+        final courseResult = state.courseResult;
+        return Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: Dimensions.screenHorizontalPadding,
+            vertical: 16.0,
+          ),
+          child: CourseAboutContent(
+            courseResult: courseResult,
+          ),
+        );
+      },
+    );
+  }
+}
+
+class CourseAboutContent extends StatelessWidget {
+  final ApiResult<Course> courseResult;
+  const CourseAboutContent({super.key, required this.courseResult});
 
   Widget _buildLoadingList() {
     return ListView.builder(
@@ -169,57 +192,45 @@ class CourseAboutTabContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<CourseDetailsBloc, CourseDetailsState>(
-      builder: (context, state) {
-        final courseResult = state.courseResult;
-        return Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: Dimensions.screenHorizontalPadding,
-            vertical: 16.0,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Instructor
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Instructor
+        const Text(
+          "Instructor",
+          style: CustomFonts.titleMedium,
+        ),
+        12.kH,
+        _buildInstructorContent(courseResult),
+        28.kH,
+        // What you'll learn
+        const Text(
+          "What you'll learn",
+          style: CustomFonts.titleMedium,
+        ),
+        8.kH,
+        _buildLearningContent(courseResult),
 
-              const Text(
-                "Instructor",
-                style: CustomFonts.titleMedium,
-              ),
-              12.kH,
-              _buildInstructorContent(courseResult),
-              28.kH,
-              // What you'll learn
-              const Text(
-                "What you'll learn",
-                style: CustomFonts.titleMedium,
-              ),
-              8.kH,
-              _buildLearningContent(courseResult),
-
-              28.kH,
-              // Requirements
-              const Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  "Requirements",
-                  style: CustomFonts.titleMedium,
-                ),
-              ),
-              8.kH,
-              _buildRequirementsContent(courseResult),
-              28.kH,
-              // Overview
-              const Text(
-                "Overview",
-                style: CustomFonts.titleMedium,
-              ),
-              8.kH,
-              _buildOverviewContent(courseResult),
-            ],
+        28.kH,
+        // Requirements
+        const Align(
+          alignment: Alignment.centerLeft,
+          child: Text(
+            "Requirements",
+            style: CustomFonts.titleMedium,
           ),
-        );
-      },
+        ),
+        8.kH,
+        _buildRequirementsContent(courseResult),
+        28.kH,
+        // Overview
+        const Text(
+          "Overview",
+          style: CustomFonts.titleMedium,
+        ),
+        8.kH,
+        _buildOverviewContent(courseResult),
+      ],
     );
   }
 }

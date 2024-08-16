@@ -18,6 +18,7 @@ class CustomFilePicker extends StatefulWidget {
   final List<File> previewFiles;
   final void Function(List<File> files)? onSelected;
   final void Function(PlatformFile file)? onRemove;
+  final String? label;
   const CustomFilePicker({
     super.key,
     this.limit = 1,
@@ -26,6 +27,7 @@ class CustomFilePicker extends StatefulWidget {
     this.previewFileUrls = const [],
     this.previewFiles = const [],
     this.onRemove,
+    this.label,
   });
 
   @override
@@ -124,52 +126,63 @@ class _CustomFilePickerState extends State<CustomFilePicker> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Wrap(
-        alignment: WrapAlignment.start,
-        crossAxisAlignment: WrapCrossAlignment.start,
-        runAlignment: WrapAlignment.start,
-        runSpacing: 8,
-        spacing: 12,
-        children: [
-          if (widget.previewFileUrls.isNotEmpty) ..._buildPreview(),
-          ...selectedFiles.map((file) {
-            return PlatformFileItem(
-              canRemove: widget.canRemove,
-              file: file,
-              onRemove: () {
-                setState(() {
-                  selectedFiles.remove(file);
-                });
-                if (widget.onRemove != null) {
-              widget.onRemove!(file);
-            }
-              },
-            );
-          }).toList(),
-          CustomButton(
-            style: CustomButtonStyle.grey,
-            height: 32,
-            onPressed: _handleSelectFile,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const HeroIcon(
-                  HeroIcons.plus,
-                  style: HeroIconStyle.mini,
-                  size: 20,
-                  color: CustomColors.textBlack,
-                ),
-                4.kW,
-                const Text(
-                  'Pick File',
-                  style: CustomFonts.labelSmall,
-                )
-              ],
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (widget.label != null)
+          Text(
+            widget.label!,
+            style: CustomFonts.labelSmall,
           ),
-        ],
-      ),
+        if (widget.label != null) 8.kH,
+        Container(
+          child: Wrap(
+            alignment: WrapAlignment.start,
+            crossAxisAlignment: WrapCrossAlignment.start,
+            runAlignment: WrapAlignment.start,
+            runSpacing: 8,
+            spacing: 12,
+            children: [
+              if (widget.previewFileUrls.isNotEmpty) ..._buildPreview(),
+              ...selectedFiles.map((file) {
+                return PlatformFileItem(
+                  canRemove: widget.canRemove,
+                  file: file,
+                  onRemove: () {
+                    setState(() {
+                      selectedFiles.remove(file);
+                    });
+                    if (widget.onRemove != null) {
+                      widget.onRemove!(file);
+                    }
+                  },
+                );
+              }).toList(),
+              CustomButton(
+                style: CustomButtonStyle.grey,
+                height: 32,
+                onPressed: _handleSelectFile,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const HeroIcon(
+                      HeroIcons.plus,
+                      style: HeroIconStyle.mini,
+                      size: 20,
+                      color: CustomColors.textBlack,
+                    ),
+                    4.kW,
+                    const Text(
+                      'Pick File',
+                      style: CustomFonts.labelSmall,
+                    )
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

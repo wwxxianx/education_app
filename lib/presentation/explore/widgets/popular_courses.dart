@@ -6,7 +6,6 @@ import 'package:education_app/common/widgets/course/course_card.dart';
 import 'package:education_app/data/network/api_result.dart';
 import 'package:education_app/domain/model/course/course.dart';
 import 'package:education_app/presentation/course_details/course_details_screen.dart';
-import 'package:education_app/presentation/video_player/video_player_wrapper_screen.dart';
 import 'package:education_app/state_management/explore/explore_bloc.dart';
 import 'package:education_app/state_management/explore/explore_state.dart';
 import 'package:flutter/material.dart';
@@ -40,14 +39,14 @@ class PopularCourses extends StatelessWidget {
               padding:
                   EdgeInsets.only(left: Dimensions.screenHorizontalPadding),
               child: Text(
-                "Popular Course Match\nwith Your Interest",
+                "Featured Course",
                 style: CustomFonts.labelLarge,
               ),
             ),
             12.kH,
             if (popularCoursesResult is ApiResultSuccess<List<Course>>)
               SizedBox(
-                height: 400,
+                height: 380,
                 child: ScrollConfiguration(
                   behavior: ScrollConfiguration.of(context)
                       .copyWith(scrollbars: false),

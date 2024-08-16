@@ -5,6 +5,7 @@ import 'package:education_app/common/utils/show_snackbar.dart';
 import 'package:education_app/common/widgets/button/custom_button.dart';
 import 'package:education_app/common/widgets/input/outlined_text_field.dart';
 import 'package:education_app/presentation/explore/explore_screen.dart';
+import 'package:education_app/presentation/onboarding/onboarding_screen.dart';
 import 'package:education_app/state_management/app_user_cubit.dart';
 import 'package:education_app/state_management/login/login_bloc.dart';
 import 'package:education_app/state_management/login/login_event.dart';
@@ -38,7 +39,9 @@ class _LoginFormState extends State<LoginForm> with InputValidator {
               appUserCubit.updateUser(user);
               if (user.isOnboardingCompleted) {
                 context.go(ExploreScreen.route);
+                return;
               }
+              context.go(OnboardingScreen.route);
             },
           ));
     }

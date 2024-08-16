@@ -1,12 +1,20 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:education_app/common/theme/color.dart';
 import 'package:education_app/common/theme/typography.dart';
 import 'package:education_app/common/utils/extensions/sized_box_extension.dart';
+import 'package:education_app/common/widgets/container/skeleton.dart';
+import 'package:education_app/domain/model/user/course_progress.dart';
 import 'package:flutter/material.dart';
-import 'package:heroicons/heroicons.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:go_router/go_router.dart';
+import 'package:heroicons/heroicons.dart';
 
 class ContinueLearningBottomSheet extends StatefulWidget {
-  const ContinueLearningBottomSheet({super.key});
+  final CourseProgress courseProgress;
+  const ContinueLearningBottomSheet({
+    super.key,
+    required this.courseProgress,
+  });
 
   @override
   State<ContinueLearningBottomSheet> createState() =>
@@ -30,9 +38,9 @@ class _ContinueLearningBottomSheetState
     super.dispose();
   }
 
-  void _handleClose() {
-    print("Pressed");
-    slideController.close();
+  void _navigateToLearningDetails() {
+    context.push("/my-learning/${widget.courseProgress.course.id}",
+        extra: widget.courseProgress.coursePart);
   }
 
   @override
@@ -73,8 +81,11 @@ class _ContinueLearningBottomSheetState
             children: [
               AspectRatio(
                 aspectRatio: 3 / 2,
-                child: Image.asset(
-                  "assets/images/course-sample-image.png",
+                child: CachedNetworkImage(
+                  imageUrl: widget.courseProgress.course.thumbnailUrl ?? "",
+                  errorWidget: (context, url, error) {
+                    return const Skeleton();
+                  },
                   fit: BoxFit.cover,
                 ),
               ),
@@ -92,14 +103,14 @@ class _ContinueLearningBottomSheetState
                     ),
                     4.kH,
                     Text(
-                      "React Crash Course like a Pro React Crash Course like a Pro",
+                      widget.courseProgress.course.title,
                       style: CustomFonts.bodySmall,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                     2.kH,
                     Text(
-                      "HTML - Introduction",
+                      widget.courseProgress.coursePart.title,
                       style: CustomFonts.bodySmall,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -107,11 +118,14 @@ class _ContinueLearningBottomSheetState
                   ],
                 ),
               ),
-              const HeroIcon(
-                HeroIcons.play,
-                style: HeroIconStyle.mini,
-                size: 28,
-                color: CustomColors.slate700,
+              GestureDetector(
+                onTap: _navigateToLearningDetails,
+                child: const HeroIcon(
+                  HeroIcons.play,
+                  style: HeroIconStyle.mini,
+                  size: 28,
+                  color: CustomColors.slate700,
+                ),
               ),
               12.kW,
             ],

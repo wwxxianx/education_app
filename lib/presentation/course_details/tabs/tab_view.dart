@@ -69,19 +69,21 @@ class _CourseDetailsTabViewState extends State<CourseDetailsTabView>
     final courseResult = state.courseResult;
     switch (index) {
       case 0:
-        return CourseAboutTabContent();
+        return CourseDetailsAboutTab();
       case 1:
         return CurriculumTabContent(
           courseId: widget.courseId,
         );
       case 2:
-        return CourseReviewsTabContent();
+        return CourseReviewsTabContent(
+          courseId: widget.courseId,
+        );
       case 3:
         return CourseMoreTabContent(
           courseId: widget.courseId,
         );
       default:
-        return CourseAboutTabContent();
+        return CourseDetailsAboutTab();
     }
   }
 
@@ -115,6 +117,7 @@ class _CourseDetailsTabViewState extends State<CourseDetailsTabView>
                 // This key causes the AnimatedSwitcher to interpret this as a "new"
                 // child each time the count changes, so that it will begin its animation
                 // when the count changes.
+                width: double.maxFinite,
                 key: ValueKey<int>(currentTabIndex),
                 child: _buildTabContent(currentTabIndex, state),
               ),

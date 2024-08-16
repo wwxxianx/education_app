@@ -1,3 +1,4 @@
+import 'package:education_app/common/theme/dimension.dart';
 import 'package:education_app/common/theme/typography.dart';
 import 'package:education_app/common/utils/extensions/sized_box_extension.dart';
 import 'package:education_app/common/widgets/avatar/avatar.dart';
@@ -35,9 +36,12 @@ class MyInstructorAccountScreen extends StatelessWidget {
             final instructorProfileResult = state.instructorProfileResult;
             if (instructorProfileResult
                 is ApiResultSuccess<InstructorProfile>) {
-              return Center(
-                child: InstructorProfileItem(
-                  profile: instructorProfileResult.data,
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: Dimensions.screenHorizontalPadding, vertical: 20,),
+                child: Center(
+                  child: InstructorProfileItem(
+                    profile: instructorProfileResult.data,
+                  ),
                 ),
               );
             }

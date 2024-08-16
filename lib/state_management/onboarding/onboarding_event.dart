@@ -1,4 +1,4 @@
-import 'package:education_app/data/network/payload/user/user_profile_payload.dart';
+import 'package:education_app/domain/model/course_category/course_category.dart';
 import 'package:flutter/foundation.dart';
 
 @immutable
@@ -7,11 +7,17 @@ sealed class OnboardingEvent {
 }
 
 final class CompleteOnboarding extends OnboardingEvent {
-  final UserProfilePayload payload;
   final VoidCallback onSuccess;
 
   const CompleteOnboarding({
-    required this.payload,
     required this.onSuccess,
+  });
+}
+
+final class OnSelectCourseCategory extends OnboardingEvent {
+  final CourseCategory category;
+
+  const OnSelectCourseCategory({
+    required this.category
   });
 }

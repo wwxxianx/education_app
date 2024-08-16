@@ -46,7 +46,7 @@ class AccountScreen extends StatelessWidget {
         body: Center(child: Column()),
       );
     }
-    
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
@@ -113,7 +113,9 @@ class AccountScreen extends StatelessWidget {
                     ),
                     4.kH,
                     CustomListTile(
-                      onTap: () {},
+                      onTap: () {
+                        context.push('/account/favorite');
+                      },
                       leading: SvgPicture.asset("assets/icons/hearts.svg"),
                       title: const Text(
                         "Saved",
@@ -148,6 +150,36 @@ class AccountScreen extends StatelessWidget {
                           "assets/icons/blackboard-filled.svg"),
                       title: const Text(
                         "Instructor",
+                        style: CustomFonts.labelSmall,
+                      ),
+                      trailing: const HeroIcon(
+                        HeroIcons.chevronRight,
+                        size: 16.0,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              20.kH,
+              AccountSectionCard(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const TextWithGradientBGShape(
+                      text: Text(
+                        "My Account",
+                        style: CustomFonts.titleMedium,
+                      ),
+                      width: 90,
+                    ),
+                    4.kH,
+                    CustomListTile(
+                      onTap: () {
+                        context.push('/account/preference');
+                      },
+                      leading: SvgPicture.asset("assets/icons/smile-heart.svg"),
+                      title: const Text(
+                        "My Preference",
                         style: CustomFonts.labelSmall,
                       ),
                       trailing: const HeroIcon(
